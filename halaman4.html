@@ -3,141 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Quiz Otomotif</title>
+<title>Quiz Otomotif</title>
 
 <style>
-:root {
-    --bg:#0f172a; --card:#1e293b; --accent:#fbbf24; --white:#f8fafc;
-}
 body{
-    margin:0; font-family:Segoe UI,sans-serif;
-    background:var(--bg); color:var(--white);
-    display:flex; flex-direction:column; align-items:center;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f172a;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 }
-.header{
-    width:100%; text-align:center; padding:20px;
-    background:linear-gradient(135deg,#1e293b,#020617);
-    border-bottom:3px solid var(--accent);
+a{color:#fbbf24;text-decoration:none;margin:10px}
+.box{
+    background:#1e293b;
+    width:90%;
+    max-width:600px;
+    padding:20px;
+    border-radius:15px;
 }
-.quiz-container{
-    max-width:600px; width:90%;
-    background:var(--card); margin-top:20px;
-    padding:25px; border-radius:20px;
+button{
+    width:100%;
+    margin-top:10px;
+    padding:12px;
+    background:#334155;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
 }
-.score-panel{
-    display:grid; grid-template-columns:repeat(3,1fr);
-    gap:10px; background:#020617;
-    padding:15px; border-radius:15px;
-    margin-bottom:20px;
-}
-.stat-item{text-align:center}
-.stat-value{color:var(--accent); font-weight:bold}
-.question-text{margin-bottom:20px}
-.options{display:grid; gap:12px}
-.btn-opt{
-    padding:14px; border-radius:12px;
-    background:#334155; color:white;
-    border:2px solid #475569; cursor:pointer;
-}
-.btn-opt:hover{border-color:var(--accent)}
 </style>
 </head>
 
 <body>
 
-<a href="index.html" style="color:var(--accent);margin-top:10px;text-decoration:none">
-⬅ Kembali ke Dashboard
-</a>
+<a href="index.html">⬅ Kembali</a>
 
-<div class="header">
-    <h1>E-EXAM OTOMOTIF</h1>
-    <p>Analisis & Troubleshooting Sepeda Motor</p>
-</div>
-
-<div class="quiz-container" id="quiz">
-    <div class="score-panel">
-        <div class="stat-item">
-            <div>Benar</div><div id="benar" class="stat-value">0</div>
-        </div>
-        <div class="stat-item">
-            <div>Salah</div><div id="salah" class="stat-value">0</div>
-        </div>
-        <div class="stat-item">
-            <div>Nilai</div><div id="nilai" class="stat-value">0</div>
-        </div>
-    </div>
-
-    <div id="q-text" class="question-text">Memuat soal…</div>
-    <div id="q-options" class="options"></div>
+<div class="box">
+    <div id="q-text">Memuat soal…</div>
+    <div id="q-options"></div>
+    <hr>
+    <div>Benar: <span id="benar">0</span> | Salah: <span id="salah">0</span></div>
 </div>
 
 <script>
-const bankSoal = [
- {q:"Warna busi putih bersih menunjukkan…",
+const bankSoal=[
+ {q:"Warna busi putih menandakan?",
   opt:["Campuran miskin","Campuran kaya"],
   ans:"Campuran miskin"},
- {q:"Rem cakram terasa membal, penyebabnya?",
-  opt:["Udara di sistem","Cakram berminyak"],
-  ans:"Udara di sistem"},
- {q:"Fungsi feeler gauge?",
-  opt:["Mengukur celah klep","Mengukur diameter"],
-  ans:"Mengukur celah klep"},
- {q:"Alat melepas magnet tanpa dipukul?",
-  opt:["Flywheel puller","Kunci inggris"],
-  ans:"Flywheel puller"},
- {q:"APAR untuk korsleting listrik?",
-  opt:["CO2 / Powder","Air"],
-  ans:"CO2 / Powder"}
+ {q:"Alat setel klep?",
+  opt:["Feeler gauge","Jangka sorong"],
+  ans:"Feeler gauge"}
 ];
 
-let soal=[], index=0, benar=0, salah=0;
+let i=0, benar=0, salah=0;
 
-function acak(arr){
-    return arr.sort(()=>Math.random()-0.5);
-}
-
-function render(){
-    if(index>=soal.length){
-        document.getElementById("q-text").innerHTML =
-        `<b>Kuis selesai</b><br>Benar ${benar} dari ${soal.length}`;
+function tampil(){
+    if(i>=bankSoal.length){
+        document.getElementById("q-text").innerText="Selesai";
         document.getElementById("q-options").innerHTML="";
         return;
     }
+    const s=bankSoal[i];
+    document.getElementById("q-text").innerText=s.q;
 
-    const s=soal[index];
-    document.getElementById("q-text").innerText =
-        `Soal ${index+1}: ${s.q}`;
-
-    const optBox=document.getElementById("q-options");
-    optBox.innerHTML="";
-
+    const box=document.getElementById("q-options");
+    box.innerHTML="";
     s.opt.forEach(o=>{
         const b=document.createElement("button");
-        b.className="btn-opt";
         b.innerText=o;
         b.onclick=()=>jawab(o);
-        optBox.appendChild(b);
+        box.appendChild(b);
     });
 }
 
-function jawab(pilih){
-    pilih===soal[index].ans ? benar++ : salah++;
-    index++;
-    updateScore();
-    render();
-}
-
-function updateScore(){
+function jawab(p){
+    p===bankSoal[i].ans ? benar++ : salah++;
     document.getElementById("benar").innerText=benar;
     document.getElementById("salah").innerText=salah;
-    document.getElementById("nilai").innerText=
-        Math.round((benar/(benar+salah))*100)||0;
+    i++;
+    tampil();
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
-    soal=acak([...bankSoal]).slice(0,5);
-    render();
-});
+document.addEventListener("DOMContentLoaded", tampil);
 </script>
 
 </body>
