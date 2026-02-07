@@ -502,7 +502,29 @@
 { q: "Apa tujuan penggunaan nitrogen (N2) pada tabung shockbreaker belakang (Monoshock)?", opt: ["Mencegah terjadinya kavitasi (gelembung udara) pada oli shock", "Agar shockbreaker terasa lebih dingin"], ans: "Mencegah terjadinya kavitasi (gelembung udara) pada oli shock" },
 { q: "Sistem 'Daytime Running Light' (DRL) pada motor berfungsi untuk?", opt: ["Meningkatkan visibilitas motor agar terlihat pengendara lain di siang hari", "Menerangi jalan saat kondisi sangat gelap gulita"], ans: "Meningkatkan visibilitas motor agar terlihat pengendara lain di siang hari" },
 { q: "Apa fungsi dari 'Needle Bearing' yang ada di ujung as kopling?", opt: ["Mendukung putaran as agar halus dan minim gesekan", "Menahan agar oli tidak rembes ke luar"], ans: "Mendukung putaran as agar halus dan minim gesekan" }  
-        
+  // =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS: SESI SST & K3 (400) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+{ q: "Alat yang paling tepat untuk melepas magnet motor tanpa digetok adalah?", opt: ["Tracker Magnet (Flywheel Puller)", "Kunci Inggris"], ans: "Tracker Magnet (Flywheel Puller)" },
+{ q: "Saat mengencangkan baut kepala silinder, mengapa harus menggunakan Kunci Torsi?", opt: ["Agar kekencangan baut merata dan mencegah kebocoran/melengkung", "Agar baut tidak bisa dibuka lagi"], ans: "Agar kekencangan baut merata dan mencegah kebocoran/melengkung" },
+{ q: "Fungsi dari 'Feeler Gauge' pada penyetelan klep adalah?", opt: ["Mengukur celah renggang antara ujung batang klep dengan baut pelatuk", "Mengukur diameter batang klep"], ans: "Mengukur celah renggang antara ujung batang klep dengan baut pelatuk" },
+{ q: "Apa kegunaan 'Impact Driver' (Obeng Getok) di bengkel?", opt: ["Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan", "Mengukur tekanan kompresi"], ans: "Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan" },
+{ q: "Alat ukur yang memiliki tingkat ketelitian 0,01 mm dan digunakan untuk diameter luar piston adalah?", opt: ["Mikrometer Luar", "Jangka Sorong"], ans: "Mikrometer Luar" },
+{ q: "Mengapa mekanik wajib menggunakan sepatu safety saat bekerja di bengkel?", opt: ["Melindungi kaki dari tumpahan oli dan jatuhnya benda berat", "Agar terlihat lebih rapi dan keren"], ans: "Melindungi kaki dari tumpahan oli dan jatuhnya benda berat" },
+{ q: "Apa fungsi dari 'Valve Spring Compressor'?", opt: ["Melepas dan memasang pengunci klep pada kepala silinder", "Mengukur kekuatan pegas klep"], ans: "Melepas dan memasang pengunci klep pada kepala silinder" },
+{ q: "Saat terjadi kebakaran akibat korsleting listrik di bengkel, jenis APAR apa yang paling tepat?", opt: ["APAR jenis CO2 atau Powder", "Air bertekanan tinggi"], ans: "APAR jenis CO2 atau Powder" },
+{ q: "Apa kegunaan dari 'Dial Gauge' saat memeriksa kruk as?", opt: ["Mengukur keolengan (run-out) poros kruk as", "Mengukur berat kruk as"], ans: "Mengukur keolengan (run-out) poros kruk as" },
+{ q: "Alat yang digunakan untuk membuang udara pada sistem rem hidrolik secara praktis adalah?", opt: ["Vacuum Brake Bleeder", "Obeng Min"], ans: "Vacuum Brake Bleeder" },
+{ q: "Mengapa kacamata pelindung (Goggles) wajib dipakai saat menggunakan mesin gerinda?", opt: ["Melindungi mata dari percikan api dan gram besi", "Agar pandangan lebih fokus"], ans: "Melindungi mata dari percikan api dan gram besi" },
+{ q: "Apa fungsi dari 'Vernier Caliper' (Jangka Sorong)?", opt: ["Mengukur diameter luar, dalam, dan kedalaman benda", "Mengukur tegangan aki"], ans: "Mengukur diameter luar, dalam, dan kedalaman benda" },
+{ q: "Jika ingin mengukur diameter dalam silinder yang sudah dilepas, alat yang digunakan setelah jangka sorong adalah?", opt: ["Cylinder Bore Gauge", "Mikrometer Luar"], ans: "Cylinder Bore Gauge" },
+{ q: "Alat SST yang berfungsi untuk menahan rumah kopling matic agar tidak berputar saat dibuka adalah?", opt: ["Universal Holder (Kunci Tracker)", "Tang Kombinasi"], ans: "Universal Holder (Kunci Tracker)" },
+{ q: "Apa fungsi 'Fender Cover' saat melakukan servis motor?", opt: ["Melindungi body motor agar tidak baret atau terkena oli", "Menyimpan alat-alat mekanik"], ans: "Melindungi body motor agar tidak baret atau terkena oli" },
+{ q: "Untuk mengukur tekanan bahan bakar pada motor injeksi, kita menggunakan?", opt: ["Fuel Pressure Gauge", "Compression Tester"], ans: "Fuel Pressure Gauge" },
+{ q: "Apa kegunaan dari 'Air Duster Gun'?", opt: ["Membersihkan debu atau sisa cairan dengan udara bertekanan", "Menyemprotkan bensin ke mesin"], ans: "Membersihkan debu atau sisa cairan dengan udara bertekanan" },
+{ q: "Bagaimana cara membaca hasil ukur jangka sorong jika garis nol nonius berada di antara 10 dan 11 mm?", opt: ["Nilai utamanya adalah 10 mm", "Nilai utamanya adalah 11 mm"], ans: "Nilai utamanya adalah 10 mm" },
+{ q: "Alat ukur kelistrikan yang dapat mengukur tegangan, arus, dan hambatan sekaligus adalah?", opt: ["Multimeter (Avometer)", "Tachometer"], ans: "Multimeter (Avometer)" },
+{ q: "Mengapa tangan tidak boleh berminyak/licin saat menggunakan kunci pas/ring?", opt: ["Mencegah kunci selip yang dapat menyebabkan cedera tangan", "Agar kunci tidak cepat berkarat"], ans: "Mencegah kunci selip yang dapat menyebabkan cedera tangan" }      
         ];
 
         let skorBenar = 0;
@@ -519,48 +541,59 @@
             document.getElementById('final-grade').innerText = nilai;
         }
 
-        function loadQuestion() {
-            const randomIdx = Math.floor(Math.random() * bankSoal.length);
-            const data = bankSoal[randomIdx];
-            
-            document.getElementById('q-text').innerText = data.q;
-            const optionsBox = document.getElementById('q-options');
-            optionsBox.innerHTML = "";
+        // --- BAGIAN LOGIKA SISTEM 10 SOAL ---
+let soalTerpilih = []; // Tempat menyimpan 10 soal acak
+let indexSekarang = 0;
+let skor = 0;
 
-            // Acak urutan opsi (A atau B)
-            const shuffledOptions = [...data.options || data.opt].sort(() => Math.random() - 0.5);
+function mulaiKuis() {
+    // 1. Acak seluruh bank soal, lalu ambil 10 saja
+    soalTerpilih = [...bankSoal].sort(() => Math.random() - 0.5).slice(0, 10);
+    
+    skor = 0;
+    indexSekarang = 0;
+    tampilkanSoal();
+}
 
-            shuffledOptions.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "btn-opt";
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, data.ans);
-                optionsBox.appendChild(btn);
-            });
-        }
+function tampilkanSoal() {
+    if (indexSekarang < soalTerpilih.length) {
+        const data = soalTerpilih[indexSekarang];
+        document.getElementById("question").innerText = `Soal ${indexSekarang + 1}: ${data.q}`;
+        
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        
+        data.opt.forEach(pilihan => {
+            const btn = document.createElement("button");
+            btn.innerText = pilihan;
+            btn.onclick = () => cekJawaban(pilihan);
+            optionsDiv.appendChild(btn);
+        });
+    } else {
+        tampilkanHasil();
+    }
+}
 
-        function checkAnswer(selected, correct) {
-            totalDikerjakan++;
-            const feedback = document.getElementById('feedback-area');
-            
-            if (selected === correct) {
-                skorBenar++;
-                feedback.innerHTML = `<span class="result-badge correct">BENAR!</span>`;
-            } else {
-                skorSalah++;
-                feedback.innerHTML = `<span class="result-badge wrong">SALAH!</span>`;
-            }
-            
-            updateDisplay();
-            
-            // Beri jeda 1 detik agar siswa bisa melihat feedback sebelum pindah soal
-            setTimeout(() => {
-                feedback.innerHTML = "";
-                loadQuestion();
-            }, 1000);
-        }
+function cekJawaban(jawabanUser) {
+    if (jawabanUser === soalTerpilih[indexSekarang].ans) {
+        skor++;
+    }
+    indexSekarang++;
+    tampilkanSoal();
+}
 
-        window.onload = loadQuestion;
+function tampilkanHasil() {
+    const totalPoint = (skor / soalTerpilih.length) * 100;
+    document.getElementById("quiz-container").innerHTML = `
+        <h2>Kuis Selesai!</h2>
+        <p>Jawaban Benar: ${skor} dari 10 soal</p>
+        <h1 style="font-size: 50px;">Point: ${totalPoint}</h1>
+        <button onclick="location.reload()">Ulangi Kuis (Soal Baru)</button>
+    `;
+}
+
+// Jalankan fungsi mulaiKuis saat halaman dibuka
+window.onload = mulaiKuis;
     </script>
 </body>
 </html>
