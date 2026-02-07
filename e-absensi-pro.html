@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Absen GPS Pro v3.0 - UPTD SMKN 1 Sumarorong</title>
+    <style>
+        :root { 
+            --primary: #0f172a; 
+            --accent: #2563eb; 
+            --success: #16a34a; 
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: var(--gradient);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+            padding: 15px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .card { 
+            background: white; 
+            width: 100%; 
+            max-width: 450px; 
+            padding: 35px; 
+            border-radius: 30px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo { 
+            width: 90px; 
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+        }
+        
+        h2 { 
+            color: var(--primary); 
+            margin: 8px 0; 
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            margin: 0; 
+            font-size: 0.95rem; 
+            color: #64748b; 
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #78350f;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .jam-digital { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+        }
+        
+        .tanggal {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .status-box { 
+            padding: 18px; 
+            border-radius: 18px; 
+            margin: 20px 0; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+            line-height: 1.6;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .status-box:hover::before {
+            left: 100%;
+        }
+        
+        .waiting { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e; 
+            border: 2px solid #fbbf24;
+        }
+        
+        .ready { 
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46; 
+            border: 2px solid #10b981;
+        }
+        
+        .error { 
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b; 
+            border: 2px solid #ef4444;
+        }
+        
+        .input-group {
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: 0.3s;
+            background: white;
+            padding: 0 5px;
+        }
+        
+        input { 
+            width: 100%; 
+            padding: 16px 15px; 
+            margin: 8px 0; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 14px; 
+            font-size: 1rem; 
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        input:focus { 
+            outline: none; 
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: 0;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+        
+        .btn-group { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-top: 20px; 
+        }
+        
+        .btn { 
+            padding: 18px; 
+            border: none; 
+            border-radius: 14px; 
+            color: white; 
+            font-weight: 700; 
+            cursor: pointer; 
+            opacity: 0.3; 
+            pointer-events: none; 
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .active { 
+            opacity: 1 !important; 
+            pointer-events: auto !important; 
+            transform: scale(1);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+        }
+        
+        .active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.3);
+        }
+        
+        .active:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-masuk { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .btn-pulang { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        
+        .info-absen { 
+            font-size: 0.8rem; 
+            margin-top: 20px; 
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+        
+        .info-item.success { color: var(--success); }
+        .info-item.pending { color: #94a3b8; }
+        
+        .gps-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .gps-card {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+        
+        .gps-card:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .gps-card .label {
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .gps-card .value {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .gps-card.good .value { color: var(--success); }
+        .gps-card.warning .value { color: var(--warning); }
+        .gps-card.danger .value { color: var(--danger); }
+        
+        .footer { 
+            font-size: 0.7rem; 
+            color: #94a3b8; 
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .history-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 14px;
+            text-align: left;
+        }
+        
+        .history-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .history-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-animation 2s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes pulse-animation {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        
+        @media (max-width: 480px) {
+            .card { padding: 25px; }
+            .jam-digital { font-size: 1.8rem; }
+            h2 { font-size: 1.2rem; }
+            .gps-info { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" class="logo" alt="Logo Tut Wuri Handayani">
+    <span class="version-badge">⚡ GPS PRO v3.0</span>
+    <h2>ABSENSI DIGITAL</h2>
+    <p class="subtitle">UPTD SMKN 1 SUMARORONG</p>
+    
+    <div id="clock" class="jam-digital">00:00:00</div>
+    <div id="date" class="tanggal">Loading...</div>
+    
+    <div id="status-msg" class="status-box waiting">
+        <span class="loading-spinner"></span><span class="pulse-dot"></span>Memulai Sistem GPS Enhanced...
+    </div>
+
+    <div class="gps-info" id="gps-info" style="display: none;">
+        <div class="gps-card" id="card-accuracy">
+            <div class="label">📍 Akurasi</div>
+            <div class="value" id="accuracy">---</div>
+        </div>
+        <div class="gps-card" id="card-distance">
+            <div class="label">📏 Jarak</div>
+            <div class="value" id="distance">---</div>
+        </div>
+        <div class="gps-card" id="card-signal">
+            <div class="label">📶 Sinyal</div>
+            <div class="value" id="signal">---</div>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="nama-guru" placeholder=" " autocomplete="name" required>
+        <label>Nama Lengkap</label>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-in" class="btn btn-masuk" onclick="kirimAbsen('DATANG')">
+            ⏰ Absen Pagi
+        </button>
+        <button id="btn-out" class="btn btn-pulang" onclick="kirimAbsen('PULANG')">
+            🏠 Absen Sore
+        </button>
+    </div>
+    
+    <div class="info-absen" id="info-absen">
+        <div class="info-item pending">
+            <span>📋</span>
+            <span>Pagi: Belum</span>
+        </div>
+        <div class="info-item pending">
+            <span>📋</span>
+            <span>Sore: Belum</span>
+        </div>
+    </div>
+
+    <div class="history-section" id="history-section" style="display: none;">
+        <div class="history-title">📊 Riwayat Hari Ini</div>
+        <div id="history-list"></div>
+    </div>
+    
+    <div class="footer">
+        <strong>UPTD SMKN 1 Sumarorong</strong><br>
+        Dusun Pasir Putih, Desa Rantekamase<br>
+        Kec. Sumarorong, Kab. Mamasa, Sulawesi Barat<br>
+        <small style="color: #fbbf24;">⚡ Enhanced GPS Pro • High Precision Mode</small>
+    </div>
+</div>
+
+<script>
+    const CONFIG = {
+        SCHOOL_COORDS: { lat: -3.1288515, lng: 119.3077882 },
+        MAX_DISTANCE: 200,
+        PAGI_START: 7.0,
+        PAGI_END: 8.5,
+        SORE_START: 15.0,
+        SORE_END: 16.0,
+        UPDATE_INTERVAL: 500, // Lebih responsif: 500ms
+        GPS_HIGH_ACCURACY: true,
+        GPS_TIMEOUT: 20000, // Timeout lebih cepat
+        GPS_MAX_AGE: 0,
+        ACCURACY_THRESHOLD: 50, // Threshold akurasi GPS
+        MAX_RETRY: 3 // Max retry untuk GPS
+    };
+
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzp2Tlk1a_rCj4fq75KDPp56YJHvIHsSoixYbgRKijdxkaCIlP0AhzBGaHFvRJiK8nWLA/exec";
+
+    let userCoords = null;
+    let gpsAccuracy = null;
+    let watchId = null;
+    let isSubmitting = false;
+    let gpsRetryCount = 0;
+    let lastGoodPosition = null;
+
+    // Enhanced Haversine Distance dengan validasi
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const φ1 = lat1 * Math.PI / 180;
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c;
+    }
+
+    // Enhanced Clock Update
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('id-ID', { 
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        const dateStr = now.toLocaleDateString('id-ID', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        document.getElementById('clock').innerText = timeStr;
+        document.getElementById('date').innerText = dateStr;
+
+        updateButtonStates();
+    }
+
+    // Enhanced Button States dengan validasi lebih ketat
+    function updateButtonStates() {
+        const now = new Date();
+        const hour = now.getHours();
+        const min = now.getMinutes();
+        const currentTime = hour + (min / 60);
+
+        const isPagiTime = currentTime >= CONFIG.PAGI_START && currentTime <= CONFIG.PAGI_END;
+        const isSoreTime = currentTime >= CONFIG.SORE_START && currentTime <= CONFIG.SORE_END;
+
+        const today = getToday();
+        const sudahPagi = localStorage.getItem('absen_pagi_' + today);
+        const sudahSore = localStorage.getItem('absen_sore_' + today);
+
+        const btnIn = document.getElementById('btn-in');
+        const btnOut = document.getElementById('btn-out');
+
+        btnIn.classList.remove('active');
+        btnOut.classList.remove('active');
+
+        if (userCoords && gpsAccuracy !== null) {
+            const dist = calculateDistance(
+                userCoords.lat, userCoords.lng, 
+                CONFIG.SCHOOL_COORDS.lat, CONFIG.SCHOOL_COORDS.lng
+            );
+            
+            const isInRange = dist <= CONFIG.MAX_DISTANCE;
+            const isAccurate = gpsAccuracy <= CONFIG.ACCURACY_THRESHOLD;
+
+            if (isInRange && isAccurate) {
+                if (isPagiTime && !sudahPagi) {
+                    btnIn.classList.add('active');
+                }
+                if (isSoreTime && !sudahSore) {
+                    btnOut.classList.add('active');
+                }
+            }
+        }
+
+        updateInfoDisplay(sudahPagi, sudahSore);
+        updateHistory();
+    }
+
+    function updateInfoDisplay(sudahPagi, sudahSore) {
+        const infoAbsen = document.getElementById('info-absen');
+        
+        const pagiHTML = sudahPagi 
+            ? '<div class="info-item success"><span>✅</span><span>Pagi: Terabsen</span></div>'
+            : '<div class="info-item pending"><span>⏳</span><span>Pagi: Belum</span></div>';
+            
+        const soreHTML = sudahSore 
+            ? '<div class="info-item success"><span>✅</span><span>Sore: Terabsen</span></div>'
+            : '<div class="info-item pending"><span>⏳</span><span>Sore: Belum</span></div>';
+        
+        infoAbsen.innerHTML = pagiHTML + soreHTML;
+    }
+
+    function updateHistory() {
+        const today = getToday();
+        const pagiData = localStorage.getItem('absen_pagi_' + today);
+        const soreData = localStorage.getItem('absen_sore_' + today);
+        
+        if (pagiData || soreData) {
+            const historySection = document.getElementById('history-section');
+            const historyList = document.getElementById('history-list');
+            historySection.style.display = 'block';
+            
+            let html = '';
+            if (pagiData) {
+                const data = JSON.parse(pagiData);
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <strong>✅ Absen Pagi</strong><br>
+                            <small style="color: #64748b;">${data.time} • ${Math.round(data.distance)}m</small>
+                        </div>
+                        <span style="color: var(--success); font-weight: 700;">VALID</span>
+                    </div>
+                `;
+            }
+            if (soreData) {
+                const data = JSON.parse(soreData);
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <strong>✅ Absen Sore</strong><br>
+                            <small style="color: #64748b;">${data.time} • ${Math.round(data.distance)}m</small>
+                        </div>
+                        <span style="color: var(--success); font-weight: 700;">VALID</span>
+                    </div>
+                `;
+            }
+            historyList.innerHTML = html;
+        }
+    }
+
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    // Enhanced GPS Tracking dengan retry mechanism
+    function startTracking() {
+        if (!navigator.geolocation) {
+            showError("❌ Perangkat tidak mendukung GPS");
+            return;
+        }
+
+        watchId = navigator.geolocation.watchPosition(
+            handlePositionSuccess,
+            handlePositionError,
+            {
+                enableHighAccuracy: CONFIG.GPS_HIGH_ACCURACY,
+                timeout: CONFIG.GPS_TIMEOUT,
+                maximumAge: CONFIG.GPS_MAX_AGE
+            }
+        );
+
+        setInterval(updateClock, CONFIG.UPDATE_INTERVAL);
+        updateClock();
+    }
+
+    // Enhanced Position Handler dengan validasi ketat
+    function handlePositionSuccess(position) {
+        gpsRetryCount = 0; // Reset retry count on success
+        
+        userCoords = { 
+            lat: position.coords.latitude, 
+            lng: position.coords.longitude 
+        };
+        gpsAccuracy = position.coords.accuracy;
+        lastGoodPosition = position;
+
+        const distance = calculateDistance(
+            userCoords.lat, userCoords.lng,
+            CONFIG.SCHOOL_COORDS.lat, CONFIG.SCHOOL_COORDS.lng
+        );
+
+        const statusBox = document.getElementById('status-msg');
+        const gpsInfo = document.getElementById('gps-info');
+        
+        gpsInfo.style.display = 'grid';
+        
+        // Update GPS cards dengan color coding
+        const accuracyCard = document.getElementById('card-accuracy');
+        const distanceCard = document.getElementById('card-distance');
+        const signalCard = document.getElementById('card-signal');
+        
+        document.getElementById('accuracy').innerText = Math.round(gpsAccuracy) + ' m';
+        document.getElementById('distance').innerText = Math.round(distance) + ' m';
+        
+        // Signal quality indicator
+        let signalQuality = 'EXCELLENT';
+        let signalClass = 'good';
+        if (gpsAccuracy > 20) {
+            signalQuality = 'GOOD';
+        }
+        if (gpsAccuracy > 35) {
+            signalQuality = 'FAIR';
+            signalClass = 'warning';
+        }
+        if (gpsAccuracy > 50) {
+            signalQuality = 'POOR';
+            signalClass = 'danger';
+        }
+        
+        document.getElementById('signal').innerText = signalQuality;
+        signalCard.className = 'gps-card ' + signalClass;
+        
+        // Color code accuracy
+        accuracyCard.className = 'gps-card ' + (gpsAccuracy <= CONFIG.ACCURACY_THRESHOLD ? 'good' : 'warning');
+        
+        // Color code distance
+        distanceCard.className = 'gps-card ' + (distance <= CONFIG.MAX_DISTANCE ? 'good' : 'danger');
+
+        if (distance <= CONFIG.MAX_DISTANCE && gpsAccuracy <= CONFIG.ACCURACY_THRESHOLD) {
+            statusBox.innerHTML = `
+                <span class="pulse-dot"></span><strong>✅ LOKASI VALID</strong><br>
+                <small>Anda berada di area sekolah dengan sinyal ${signalQuality}</small>
+            `;
+            statusBox.className = "status-box ready";
+        } else if (distance > CONFIG.MAX_DISTANCE) {
+            statusBox.innerHTML = `
+                ❌ <strong>DI LUAR JANGKAUAN</strong><br>
+                <small>Jarak ${Math.round(distance)}m • Maksimal ${CONFIG.MAX_DISTANCE}m dari sekolah</small>
+            `;
+            statusBox.className = "status-box error";
+        } else {
+            statusBox.innerHTML = `
+                ⚠️ <strong>SINYAL GPS LEMAH</strong><br>
+                <small>Akurasi ${Math.round(gpsAccuracy)}m • Pindah ke area terbuka untuk sinyal lebih baik</small>
+            `;
+            statusBox.className = "status-box waiting";
+        }
+
+        updateButtonStates();
+    }
+
+    // Enhanced Error Handler dengan retry
+    function handlePositionError(error) {
+        gpsRetryCount++;
+        
+        let message = "❌ Error GPS tidak diketahui";
+        
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                message = "❌ <strong>AKSES GPS DITOLAK</strong><br><small>Aktifkan izin lokasi di pengaturan browser</small>";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                message = `⚠️ <strong>POSISI TIDAK TERSEDIA</strong><br><small>Periksa koneksi GPS/Internet • Retry ${gpsRetryCount}/${CONFIG.MAX_RETRY}</small>`;
+                if (gpsRetryCount < CONFIG.MAX_RETRY && lastGoodPosition) {
+                    setTimeout(() => {
+                        handlePositionSuccess(lastGoodPosition);
+                    }, 2000);
+                }
+                break;
+            case error.TIMEOUT:
+                message = `⏱️ <strong>GPS TIMEOUT</strong><br><small>Sinyal GPS lemah • Retry ${gpsRetryCount}/${CONFIG.MAX_RETRY}</small>`;
+                if (gpsRetryCount < CONFIG.MAX_RETRY) {
+                    setTimeout(startTracking, 1000);
+                }
+                break;
+        }
+        
+        showError(message);
+    }
+
+    function showError(message) {
+        const statusBox = document.getElementById('status-msg');
+        statusBox.innerHTML = message;
+        statusBox.className = "status-box error";
+    }
+
+    // Enhanced Kirim Absensi dengan validasi ketat
+    async function kirimAbsen(tipe) {
+        if (isSubmitting) return;
+
+        const nama = document.getElementById('nama-guru').value.trim();
+        
+        if (!nama) {
+            alert("⚠️ Mohon isi nama lengkap Anda!");
+            document.getElementById('nama-guru').focus();
+            return;
+        }
+
+        if (nama.length < 3) {
+            alert("⚠️ Nama terlalu pendek (minimal 3 karakter)!");
+            return;
+        }
+
+        if (!userCoords) {
+            alert("⚠️ GPS belum siap. Tunggu hingga status LOKASI VALID.");
+            return;
+        }
+
+        const distance = calculateDistance(
+            userCoords.lat, userCoords.lng,
+            CONFIG.SCHOOL_COORDS.lat, CONFIG.SCHOOL_COORDS.lng
+        );
+
+        if (distance > CONFIG.MAX_DISTANCE) {
+            alert(`❌ Anda terlalu jauh dari sekolah!\n\nJarak: ${Math.round(distance)}m\nMaksimal: ${CONFIG.MAX_DISTANCE}m\n\nSilakan mendekati area sekolah.`);
+            return;
+        }
+
+        if (gpsAccuracy > CONFIG.ACCURACY_THRESHOLD) {
+            if (!confirm(`⚠️ PERINGATAN AKURASI GPS\n\nAkurasi GPS Anda: ${Math.round(gpsAccuracy)}m\nAkurasi Minimum: ${CONFIG.ACCURACY_THRESHOLD}m\n\nSinyal GPS lemah dapat menyebabkan lokasi tidak akurat.\n\nLanjutkan absen?`)) {
+                return;
+            }
+        }
+
+        const today = getToday();
+        const storageKey = `absen_${tipe.toLowerCase()}_${today}`;
+        
+        if (localStorage.getItem(storageKey)) {
+            alert(`ℹ️ Anda sudah melakukan absen ${tipe} hari ini!\n\nLihat riwayat di bawah untuk detail.`);
+            return;
+        }
+
+        if (!confirm(`📝 KONFIRMASI ABSEN ${tipe}\n\nNama: ${nama}\nJarak: ${Math.round(distance)}m\nAkurasi: ${Math.round(gpsAccuracy)}m\n\nYakin data sudah benar?`)) {
+            return;
+        }
+
+        isSubmitting = true;
+        const btnIn = document.getElementById('btn-in');
+        const btnOut = document.getElementById('btn-out');
+        const originalTextIn = btnIn.innerHTML;
+        const originalTextOut = btnOut.innerHTML;
+        
+        if (tipe === 'DATANG') {
+            btnIn.innerHTML = '<span class="loading-spinner"></span>Mengirim...';
+            btnIn.disabled = true;
+        } else {
+            btnOut.innerHTML = '<span class="loading-spinner"></span>Mengirim...';
+            btnOut.disabled = true;
+        }
+
+        try {
+            const now = new Date();
+            const payload = {
+                nama: nama,
+                tipe: tipe,
+                ket: "Hadir",
+                lokasi: `${userCoords.lat},${userCoords.lng}`,
+                jarak: Math.round(distance),
+                akurasi: Math.round(gpsAccuracy),
+                timestamp: now.toISOString(),
+                waktu: now.toLocaleString('id-ID'),
+                version: "GPS_PRO_v3.0"
+            };
+
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            localStorage.setItem(storageKey, JSON.stringify({
+                nama: nama,
+                time: now.toLocaleTimeString('id-ID'),
+                date: today,
+                coords: userCoords,
+                distance: Math.round(distance),
+                accuracy: Math.round(gpsAccuracy)
+            }));
+
+            localStorage.setItem('last_nama', nama);
+
+            alert(`✅ ABSEN ${tipe} BERHASIL!\n\nTerima kasih, ${nama}!\n\nData telah tersimpan:\n• Waktu: ${now.toLocaleTimeString('id-ID')}\n• Jarak: ${Math.round(distance)}m\n• Akurasi: ${Math.round(gpsAccuracy)}m`);
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert("❌ GAGAL MENGIRIM DATA!\n\nPeriksa koneksi internet Anda dan coba lagi.");
+            
+            if (tipe === 'DATANG') {
+                btnIn.innerHTML = originalTextIn;
+                btnIn.disabled = false;
+            } else {
+                btnOut.innerHTML = originalTextOut;
+                btnOut.disabled = false;
+            }
+        } finally {
+            isSubmitting = false;
+        }
+    }
+
+    function loadLastName() {
+        const lastName = localStorage.getItem('last_nama');
+        if (lastName) {
+            document.getElementById('nama-guru').value = lastName;
+        }
+    }
+
+    window.onload = () => {
+        startTracking();
+        loadLastName();
+        updateHistory();
+    };
+
+    window.onbeforeunload = () => {
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+        }
+    };
+</script>
+</body>
+</html>
