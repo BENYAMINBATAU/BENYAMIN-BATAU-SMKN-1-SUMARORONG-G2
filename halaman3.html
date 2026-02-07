@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scanner Busi AI Ultra v3.0 - 200+ Database</title>
+    <title>BENYAMIN BATAU APP - Ultra Precision Scanner v2.0</title>
     <style>
         :root { 
             --bg: #020617; 
@@ -182,6 +182,22 @@
             transform: scale(0.98);
             box-shadow: 0 3px 10px rgba(251, 191, 36, 0.4);
         }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
         
         #result { 
             display: none; 
@@ -215,6 +231,13 @@
             flex-shrink: 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             position: relative;
+        }
+        .color-preview::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
         }
         
         .confidence-bar {
@@ -329,30 +352,19 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
-        
-        .db-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: linear-gradient(135deg, #c084fc, #7c3aed);
-            color: white;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            margin-left: 10px;
-        }
     </style>
 </head>
 <body>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <div class="loading-text">AI ANALYZING COLOR SPECTRUM...</div>
+    <div class="loading-text">MENGANALISIS WARNA...</div>
 </div>
 
 <div class="app-header">
-    <h1>BENYAMIN BATAU SCANNER ULTRA</h1>
-    <p>PRECISION SPARK PLUG DIAGNOSTIC SENSOR • CIE2000 ALGORITHM</p>
-    <p class="version">v3.0 ULTRA <span class="db-badge">200+ DATABASE</span> • SMKN 1 SUMARORONG • 98% ACCURACY</p>
+    <h1>BENYAMIN BATAU APP</h1>
+    <p>PRECISION SPARK PLUG DIAGNOSTIC SENSOR</p>
+    <p class="version">v2.0 PRO • SMKN 1 SUMARORONG • ENHANCED ALGORITHM</p>
 </div>
 
 <div id="viewport">
@@ -361,7 +373,6 @@
         <div><span class="label">STATUS:</span> <span class="value" id="status">READY</span></div>
         <div><span class="label">LIGHTING:</span> <span class="value" id="lighting">---</span></div>
         <div><span class="label">SAMPLES:</span> <span class="value" id="samples">0</span></div>
-        <div><span class="label">DATABASE:</span> <span class="value">200 CONDITIONS</span></div>
     </div>
     <div class="overlay">
         <div class="target-box">
@@ -375,7 +386,7 @@
 </div>
 
 <div class="ui-panel">
-    <button id="snap" class="btn">📸 AMBIL DATA & ANALISIS WARNA (200+ DB)</button>
+    <button id="snap" class="btn">📸 AMBIL DATA & ANALISIS WARNA</button>
 
     <div id="result">
         <div class="res-header">
@@ -407,20 +418,20 @@
         
         <div class="stats-grid">
             <div class="stat-box">
-                <div class="stat-label">CIE L*</div>
-                <div class="stat-value" id="lightness">---</div>
+                <div class="stat-label">BRIGHTNESS</div>
+                <div class="stat-value" id="brightness">---</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">CIE C*</div>
-                <div class="stat-value" id="chroma">---</div>
+                <div class="stat-label">SATURATION</div>
+                <div class="stat-value" id="saturation">---</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">CIE H°</div>
+                <div class="stat-label">HUE ANGLE</div>
                 <div class="stat-value" id="hue">---</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">ΔE2000</div>
-                <div class="stat-value" id="deltaE">---</div>
+                <div class="stat-label">MATCH SCORE</div>
+                <div class="stat-value" id="matchScore">---</div>
             </div>
         </div>
         
@@ -430,6 +441,327 @@
 
 <canvas id="canvas"></canvas>
 
-<script src="/mnt/user-data/outputs/scanner-library-200.js"></script>
+<script>
+    // ENHANCED COLOR LIBRARY - 120 KONDISI DENGAN METADATA
+    const LIBRARY = [
+        // NORMAL (Coklat/Tan) - 25 variasi
+        { name: "Normal Perfect", rgb: [180, 145, 115], severity: "normal", ind: "Coklat muda ideal. Pembakaran sempurna, efisiensi maksimal.", pen: "AFR optimal 14.7:1, suhu kerja 400-850°C, timing pengapian presisi.", sol: "Kondisi terbaik. Pertahankan perawatan rutin setiap 5.000 km." },
+        { name: "Normal Standard", rgb: [175, 140, 110], severity: "normal", ind: "Coklat standar sehat. Mesin bekerja dalam parameter ideal.", pen: "Sistem injeksi bahan bakar (FI) bekerja optimal, kompresi normal.", sol: "Lanjutkan penggunaan. Cek gap busi setiap 10.000 km (0.8-0.9mm)." },
+        { name: "Normal Warm", rgb: [170, 130, 100], severity: "normal", ind: "Coklat hangat. Temperatur operasional sempurna.", pen: "Heat range sesuai spesifikasi, sistem pendingin efektif.", sol: "Bersihkan drat busi dari kerak ringan setiap service." },
+        { name: "Normal Light Tan", rgb: [188, 150, 120], severity: "normal", ind: "Tan cerah. Pembakaran sangat bersih dan efisien.", pen: "Kualitas bensin premium baik, filter udara bersih.", sol: "Gunakan bensin RON 90+ sesuai rekomendasi pabrikan." },
+        { name: "Normal Grey Tan", rgb: [165, 145, 125], severity: "normal", ind: "Abu-coklat. Kondisi mesin stabil untuk pemakaian harian.", pen: "Beban mesin seimbang, tidak overload atau underload.", sol: "Perawatan berkala sudah tepat. Lanjutkan." },
+        { name: "Normal Deep Brown", rgb: [160, 125, 100], severity: "normal", ind: "Coklat tua masih aman. Sedikit deposit normal.", pen: "Penggunaan dalam kota dengan traffic padat.", sol: "Sesekali gas motor di putaran tinggi untuk burn-off deposit." },
+        { name: "Normal Sandy", rgb: [185, 155, 130], severity: "normal", ind: "Coklat pasir. Residu pembakaran minimal.", pen: "Oli mesin berkualitas baik, tidak ada kebocoran.", sol: "Ganti oli sesuai interval (2.000-3.000 km untuk matic)." },
+        { name: "Normal Earth", rgb: [155, 120, 95], severity: "normal", ind: "Coklat tanah. Warna khas motor berbahan bakar Premium.", pen: "Oktan bensin 88-90, tidak ada knocking.", sol: "Aman untuk perjalanan jauh." },
+        { name: "Normal Brick", rgb: [158, 123, 98], severity: "normal", ind: "Warna bata ringan. Kondisi kerja stabil.", pen: "PGM-FI atau karburator tersetting dengan baik.", sol: "Cek busi visual setiap 6 bulan." },
+        { name: "Normal Mocha", rgb: [150, 115, 90], severity: "normal", ind: "Coklat moka. Temperatur kerja rata di seluruh silinder.", pen: "Tidak ada misfiring, akselerasi responsif.", sol: "Gunakan busi sesuai kode panas pabrikan." },
+        { name: "Normal Dusty", rgb: [172, 138, 110], severity: "normal", ind: "Tan berdebu tipis. Pemakaian urban normal.", pen: "Stop-and-go traffic, tidak ada masalah.", sol: "Bersihkan air filter setiap 3.000 km." },
+        { name: "Normal Beige", rgb: [190, 165, 140], severity: "normal", ind: "Krem tan. Pembakaran sangat bersih.", pen: "Bensin berkualitas tinggi, sistem injeksi presisi.", sol: "Kondisi ideal. Pertahankan." },
+        { name: "Normal Light Grey", rgb: [162, 162, 158], severity: "normal", ind: "Abu muda sehat. Bahan bakar sangat bersih.", pen: "Minimal deposit karbon, efisiensi tinggi.", sol: "Sangat baik untuk long ride." },
+        { name: "Normal Oatmeal", rgb: [182, 158, 135], severity: "normal", ind: "Gandum cerah. Sensor O2 (lambda) bekerja optimal.", pen: "Closed-loop fuel system aktif dengan baik.", sol: "Check-up ECU setiap tahun." },
+        { name: "Normal Pale", rgb: [178, 148, 118], severity: "normal", ind: "Coklat pucat. Settingan AFR sedikit lean tapi aman.", pen: "Ekonomis BBM, tidak ada detonasi.", sol: "Monitor konsumsi bensin secara berkala." },
+        { name: "Normal Matte", rgb: [168, 135, 105], severity: "normal", ind: "Coklat doff. Residu pembakaran rendah.", pen: "Ruang bakar bersih, kompresi stabil.", sol: "Normal operation. Service sesuai manual book." },
+        { name: "Normal Copper", rgb: [174, 134, 98], severity: "normal", ind: "Tembaga-coklat. Suhu mesin konsisten.", pen: "Thermostat bekerja baik, coolant cukup.", sol: "Cek level air radiator rutin." },
+        { name: "Normal Khaki", rgb: [165, 135, 105], severity: "normal", ind: "Khaki brown. Aliran bensin lancar.", pen: "Fuel pump pressure normal 2.8-3.2 bar.", sol: "Bersihkan fuel strainer setiap 20.000 km." },
+        { name: "Normal Pebble", rgb: [160, 140, 120], severity: "normal", ind: "Warna kerikil. Self-cleaning busi aktif.", pen: "Suhu busi cukup untuk burn deposit.", sol: "Heat range sudah tepat." },
+        { name: "Normal Classic", rgb: [171, 139, 109], severity: "normal", ind: "Tan klasik Honda/Yamaha. Standar pabrik.", pen: "Settingan original tanpa modifikasi.", sol: "Maintain kondisi ini." },
+        { name: "Normal Soft Tan", rgb: [183, 148, 118], severity: "normal", ind: "Tan lembut. Motor injeksi modern.", pen: "ECU mapping optimal untuk efisiensi.", sol: "Gunakan fuel additive setiap 3 bulan (opsional)." },
+        { name: "Normal Warm Grey", rgb: [155, 155, 150], severity: "normal", ind: "Abu hangat. Pembakaran lean terkontrol.", pen: "Sedikit irit bensin, performa normal.", sol: "Kondisi baik untuk commuter." },
+        { name: "Normal Sienna", rgb: [157, 127, 97], severity: "normal", ind: "Sienna brown. Warna umum motor karbu.", pen: "Karburator jet needle posisi standard.", sol: "Cek float level karburator." },
+        { name: "Normal Caramel", rgb: [169, 141, 111], severity: "normal", ind: "Karamel. Slight carbon deposit normal.", pen: "Pemakaian dalam kota + luar kota seimbang.", sol: "Bersihkan throttle body setiap 15.000 km." },
+        { name: "Normal Adobe", rgb: [163, 133, 103], severity: "normal", ind: "Adobe brown. Kondisi sehat untuk motor tua (>5 tahun).", pen: "Wear normal sesuai usia motor.", sol: "Overhaul ringan jika sudah >40.000 km." },
+
+        // CARBON FOULING (Hitam Kering) - 20 variasi
+        { name: "Carbon Light", rgb: [70, 70, 70], severity: "warning", ind: "Hitam tipis. Awal fouling, campuran mulai rich.", pen: "AFR sekitar 13:1-13.5:1, sedikit boros bensin 5-10%.", sol: "Cek filter udara kotor. Ganti jika hitam/berminyak." },
+        { name: "Carbon Dry Soot", rgb: [55, 55, 55], severity: "warning", ind: "Jelaga kering menumpuk. Pembakaran tidak sempurna.", pen: "Ignition timing terlambat atau coil lemah.", sol: "Cek kondisi koil ignition, ganti jika resistansi >15kΩ." },
+        { name: "Carbon Standard", rgb: [48, 48, 48], severity: "warning", ind: "Carbon fouling sedang. Performa mesin turun.", pen: "Injector kotor/bocor, atau air filter tersumbat.", sol: "Ultrasonic cleaning injector + ganti air filter." },
+        { name: "Carbon Matte Black", rgb: [42, 42, 42], severity: "danger", ind: "Hitam doff tebal. Tarikan berat, konsumsi BBM naik 15-20%.", pen: "Mixture terlalu kaya, ECU mapping salah, atau sensor O2 rusak.", sol: "Scan ECU error code. Reset adaptif learning ECU." },
+        { name: "Carbon Charcoal", rgb: [38, 38, 38], severity: "danger", ind: "Seperti arang. Filter udara sangat kotor/basah oli.", pen: "Crankcase ventilation (breather) tersumbat.", sol: "Ganti air filter + bersihkan breather hose." },
+        { name: "Carbon Dark Ash", rgb: [60, 60, 60], severity: "warning", ind: "Abu gelap berkarbon. Sensor EOT/IAT rusak.", pen: "ECU mendapat data temperatur salah, over-fuel.", sol: "Scan sensor Engine Oil Temperature dan Intake Air Temp." },
+        { name: "Carbon Deep Soot", rgb: [32, 32, 32], severity: "danger", ind: "Jelaga sangat tebal. Idle kasar, sering mati.", pen: "Injektor bocor konstan atau pressure regulator gagal.", sol: "Ganti O-ring injector atau fuel pressure regulator." },
+        { name: "Carbon Velvet", rgb: [28, 28, 28], severity: "danger", ind: "Hitam beludru pekat. Bensin berlebih masuk silinder.", pen: "Float needle karbu macet atau FI pressure >3.5 bar.", sol: "Service karburator total atau cek fuel pump output." },
+        { name: "Carbon Graphite", rgb: [62, 62, 62], severity: "warning", ind: "Warna grafit. Motor sering jalan pelan/macet.", pen: "Low-speed usage, busi tidak mencapai self-clean temp.", sol: "Gas motor RPM tinggi (5000+) setiap 15 menit sekali." },
+        { name: "Carbon Grayish", rgb: [72, 72, 72], severity: "warning", ind: "Hitam keabu-abuan. Pengapian lemah, spark tidak kuat.", pen: "Kabel busi retak/bocor arus, atau CDI/ECU igniter lemah.", sol: "Ganti kabel busi jika resistansi >25kΩ/meter." },
+        { name: "Carbon Fouled Stage 1", rgb: [50, 50, 50], severity: "warning", ind: "Awal misfiring. Sesekali tersendat saat akselerasi.", pen: "Gap busi terlalu lebar (>1.1mm) atau electrode terkikis.", sol: "Set gap ke 0.8-0.9mm atau ganti busi baru." },
+        { name: "Carbon Fouled Stage 2", rgb: [45, 45, 45], severity: "danger", ind: "Fouling parah. Hambatan listrik tinggi, sulit start.", pen: "Kerak karbon menginsulasi elektroda.", sol: "Bersihkan dengan sikat kawat + contact cleaner." },
+        { name: "Carbon Rich Mixture", rgb: [40, 40, 40], severity: "danger", ind: "Over-rich. Asap hitam dari knalpot, bau bensin.", pen: "Main jet karbu terlalu besar atau TPS sensor error.", sol: "Turunkan ukuran main jet atau kalibrasi TPS." },
+        { name: "Carbon Smoky", rgb: [54, 54, 54], severity: "warning", ind: "Hitam asap tipis. Banyak sisa bahan bakar.", pen: "Kompresi rendah <8 bar, atau valve clearance tidak tepat.", sol: "Cek kompresi silinder + adjust valve clearance." },
+        { name: "Carbon Dead Spark", rgb: [35, 35, 35], severity: "danger", ind: "Busi mati total. Tidak ada percikan api.", pen: "Elektroda tertutup karbon penuh, atau gap short.", sol: "Ganti busi segera. Cek penyebab carbon buildup." },
+        { name: "Carbon Sludge Mix", rgb: [47, 47, 47], severity: "danger", ind: "Campuran karbon + residu. Piston ring bocor sedikit.", pen: "Oli terbakar sedikit + bensin over-rich.", sol: "Top overhaul: ganti ring piston + PnP head." },
+        { name: "Carbon Diesel-like", rgb: [37, 37, 37], severity: "danger", ind: "Hitam seperti diesel. Pembakaran sangat buruk.", pen: "Busi terlalu dingin untuk aplikasi, atau always low RPM.", sol: "Upgrade ke busi heat range lebih panas (misal UR4 ke UR5)." },
+        { name: "Carbon Powder", rgb: [65, 65, 65], severity: "warning", ind: "Seperti bubuk hitam. Mudah dibersihkan.", pen: "Short trip usage, mesin tidak mencapai operating temp.", sol: "Warming up 3-5 menit sebelum jalan." },
+        { name: "Carbon Crusty", rgb: [43, 43, 43], severity: "danger", ind: "Kerak karbon keras. Sulit dibersihkan.", pen: "Karbon terbakar ulang (re-carbonize), suhu tinggi lokal.", sol: "Rendam busi dalam carb cleaner 2 jam." },
+        { name: "Carbon Terminal", rgb: [30, 30, 30], severity: "danger", ind: "Stage terminal. Mesin hampir tidak bisa jalan.", pen: "Multi-fault: rich mixture + weak spark + low compression.", sol: "Diagnosis menyeluruh + major service diperlukan." },
+
+        // OIL FOULING (Hitam Basah/Glossy) - 20 variasi
+        { name: "Oil Wet Light", rgb: [25, 25, 25], severity: "danger", ind: "Hitam basah ringan. Oli mulai masuk combustion chamber.", pen: "Seal katup (valve seal) mulai keras/retak.", sol: "Ganti valve seal sebelum makin parah." },
+        { name: "Oil Glossy", rgb: [15, 15, 15], severity: "danger", ind: "Hitam mengkilap. Ring piston aus atau stuck.", pen: "Piston ring clearance >0.5mm atau ring stuck di groove.", sol: "Turun mesin: ganti piston ring set + honing silinder." },
+        { name: "Oil Jet Black", rgb: [8, 8, 8], severity: "danger", ind: "Hitam pekat basah. Oli membanjiri silinder.", pen: "Ring piston patah, atau wall silinder oval/scratch.", sol: "Overhaul total: ganti piston set + boring silinder oversize." },
+        { name: "Oil Sludge", rgb: [18, 18, 18], severity: "danger", ind: "Lumpur oli tebal. Rembesan parah.", pen: "PCV (crankcase ventilation) valve macet tertutup.", sol: "Ganti PCV valve + bersihkan crankcase breather." },
+        { name: "Oil Greasy", rgb: [28, 28, 28], severity: "danger", ind: "Berminyak lengket. Kompresi bocor ke crankcase.", pen: "Blow-by gas berlebihan, tekanan crankcase tinggi.", sol: "Cek compression test. Jika <6 bar, overhaul needed." },
+        { name: "Oil Brim", rgb: [12, 12, 12], severity: "danger", ind: "Basah oli merata. Oli terbakar konstan.", pen: "Konsumsi oli >500ml per 1000km. Asap biru saat gas.", sol: "Wajib service besar: ganti ring, seal, boring jika perlu." },
+        { name: "Oil Deep Gloss", rgb: [10, 10, 10], severity: "danger", ind: "Sangat mengkilap seperti cat. Kebocoran serius.", pen: "Cylinder head gasket bocor oli ke combustion chamber.", sol: "Ganti head gasket + surface cylinder head (skimming)." },
+        { name: "Oil Heavy", rgb: [5, 5, 5], severity: "danger", ind: "Oli sangat tebal melapisi elektroda.", pen: "Kerusakan internal parah: piston, ring, cylinder worn.", sol: "Turun mesin total. Estimasi biaya 1.5-3 juta." },
+        { name: "Oil Dark Viscous", rgb: [22, 22, 22], severity: "danger", ind: "Cairan kental hitam. Penyekat oli rusak total.", pen: "Valve guide worn atau seal robek.", sol: "Machine shop: ganti valve guide + reaming + seal baru." },
+        { name: "Oil Tar", rgb: [6, 6, 6], severity: "danger", ind: "Hitam aspal lengket. Oli lama mengendap terbakar.", pen: "Oli tidak diganti >8000km, sludge terbentuk.", sol: "Engine flush + ganti oli synthetic + bersihkan piston crown." },
+        { name: "Oil Wet Soot", rgb: [20, 20, 20], severity: "danger", ind: "Campuran oli & karbon. Dual problem.", pen: "Rich mixture + oil consumption bersamaan.", sol: "Fix injector (rich) + fix ring piston (oil) secara bersamaan." },
+        { name: "Oil Slick", rgb: [14, 14, 14], severity: "danger", ind: "Lapisan licin oli. Seal klep intake bocor.", pen: "Oli terhisap dari intake saat vakum tinggi.", sol: "Ganti intake valve seal (biasanya lebih rusak dari exhaust)." },
+        { name: "Oil Lubricant Leak", rgb: [16, 16, 16], severity: "danger", ind: "Bocoran pelumas mekanis. Turbo seal rusak (jika ada).", pen: "Pada motor dengan turbo/supercharger.", sol: "Rebuild turbo atau ganti CHRA (center housing)." },
+        { name: "Oil Gooey", rgb: [19, 19, 19], severity: "danger", ind: "Lengket seperti lem. Residu oli sudah parah.", pen: "Oli bercampur carbon deposit lama.", sol: "Walnut blasting untuk bersihkan intake valve carbon." },
+        { name: "Oil Shimmer", rgb: [11, 11, 11], severity: "danger", ind: "Kilau basah. Motor mengeluarkan asap biru terus.", pen: "Blow-by berat, breather mengeluarkan asap oli.", sol: "Cek breather hose, pasang oil catch can (opsional)." },
+        { name: "Oil Soaked", rgb: [13, 13, 13], severity: "danger", ind: "Terrendam oli. Piston ring gap terlalu besar.", pen: "Ring end gap >1mm, oli lolos ke atas.", sol: "Ganti ring dengan part OEM, cek spesifikasi gap." },
+        { name: "Oil Dripping", rgb: [9, 9, 9], severity: "danger", ind: "Seperti menetes. Level oli berkurang cepat.", pen: "1 liter oli habis <2000km.", sol: "Major overhaul tidak bisa ditunda lagi." },
+        { name: "Oil Burned", rgb: [17, 17, 17], severity: "danger", ind: "Oli terbakar. Ruang bakar penuh residu.", pen: "Oli masuk + suhu tinggi = deposit keras.", sol: "Bersihkan piston crown dengan chemical decarbonizer." },
+        { name: "Oil Varnish", rgb: [21, 21, 21], severity: "danger", ind: "Lapisan vernis oli. Overheating + oil fouling.", pen: "Oli terbakar di suhu >180°C, membentuk lacquer.", sol: "Turun mesin + chemical cleaning + ganti oli high temp." },
+        { name: "Oil Terminal", rgb: [7, 7, 7], severity: "danger", ind: "Stadium akhir. Mesin hampir tidak bisa dipakai.", pen: "Multiple seal failure + ring failure + head gasket leak.", sol: "Konsultasi bengkel untuk estimasi total rebuild." },
+
+        // LEAN & OVERHEAT (Putih/Cerah) - 25 variasi
+        { name: "Lean White", rgb: [225, 225, 225], severity: "warning", ind: "Putih bersih. Campuran terlalu irit/lean.", pen: "AFR >15.5:1, bensin kurang, udara berlebih.", sol: "Cek fuel pressure (harus 2.8-3.2 bar). Ganti fuel filter." },
+        { name: "Lean Dry White", rgb: [235, 235, 235], severity: "warning", ind: "Putih kering. Bensin tidak cukup mencapai busi.", pen: "Injektor tersumbat atau fuel pump output drop.", sol: "Ultrasonic clean injector. Test fuel pump output pressure." },
+        { name: "Lean Pale", rgb: [218, 218, 218], severity: "warning", ind: "Pucat keabuan. AFR di atas 15.5:1.", pen: "Sensor O2 membaca lean, ECU kurangi bensin berlebihan.", sol: "Scan O2 sensor voltage (harus 0.1-0.9V fluktuatif)." },
+        { name: "Lean Ivory", rgb: [228, 228, 220], severity: "warning", ind: "Warna gading. Settingan irit berlebihan.", pen: "Intake manifold bocor udara (vacuum leak).", sol: "Smoke test intake: spray carb cleaner, dengar perubahan RPM." },
+        { name: "Lean Silverish", rgb: [210, 210, 210], severity: "warning", ind: "Perak pucat. Suplai bensin tidak stabil.", pen: "Fuel strainer kotor atau tangki bensin kotor.", sol: "Bersihkan fuel strainer di fuel pump. Kuras tangki jika ada karat." },
+        { name: "Lean Vacuum", rgb: [222, 222, 222], severity: "warning", ind: "Kebocoran vakum intake. Udara masuk tidak terukur.", pen: "Gasket intake bocor atau throttle body seal rusak.", sol: "Ganti gasket intake manifold (biaya 50-150rb)." },
+        { name: "Lean Fuel Starve", rgb: [226, 226, 226], severity: "warning", ind: "Kelaparan bensin. Filter bensin mampet.", pen: "Fuel filter tidak diganti >20.000km.", sol: "Ganti fuel filter (inline atau di dalam fuel pump)." },
+        { name: "Lean Thin", rgb: [232, 232, 232], severity: "warning", ind: "Putih tipis. Bensin minimal tapi mesin jalan.", pen: "Pilot jet/idle jet terlalu kecil (motor karbu).", sol: "Naikan ukuran pilot jet 1 step (misal #38→#40)." },
+        { name: "Lean Clean Burn", rgb: [215, 215, 215], severity: "normal", ind: "Sangat bersih. Settingan irit untuk fuel economy.", pen: "Intentional lean tune untuk efisiensi BBM.", sol: "Normal jika untuk eco-riding. Monitor suhu mesin." },
+        
+        { name: "Overheat Blistered", rgb: [245, 245, 245], severity: "danger", ind: "Putih melepuh. Suhu sangat tinggi >950°C.", pen: "Busi heat range terlalu panas untuk penggunaan.", sol: "Ganti ke busi kode lebih dingin (misal NGK C7HSA→C6HSA)." },
+        { name: "Overheat Chalky", rgb: [248, 248, 248], severity: "danger", ind: "Putih kapur. Radiator bermasalah atau coolant habis.", pen: "Suhu mesin >105°C, coolant kurang/bocor.", sol: "Cek level coolant, pressure test radiator cap + hose." },
+        { name: "Overheat Eroded", rgb: [252, 252, 252], severity: "danger", ind: "Putih mengkilap. Elektroda terkikis/terbakar.", pen: "Ground electrode eroded >0.5mm, center melted.", sol: "Ganti busi baru SEGERA. Motor jangan dipaksa jalan." },
+        { name: "Overheat Snow", rgb: [255, 255, 255], severity: "danger", ind: "Sangat putih murni. Bahaya detonasi/knocking.", pen: "Pre-ignition terjadi, bensin oktan terlalu rendah.", sol: "Gunakan Pertamax (RON 92) atau Pertamax Turbo (RON 98)." },
+        { name: "Overheat Bone", rgb: [240, 240, 240], severity: "danger", ind: "Warna tulang. Mesin terlalu panas konstan.", pen: "Thermostat macet tertutup atau water pump rusak.", sol: "Ganti thermostat (opens 80-85°C) + cek water pump." },
+        { name: "Overheat Glazed", rgb: [246, 246, 238], severity: "danger", ind: "Putih kekuningan mengkilap. Temperatur ekstrim.", pen: "Ceramic glaze terbentuk di insulator (1000°C+).", sol: "Pakai busi kode 2 step lebih dingin + fix cooling system." },
+        { name: "Overheat Scorched", rgb: [242, 242, 242], severity: "danger", ind: "Hangus putih. Heat range salah pilih.", pen: "Busi untuk motor standar dipakai di motor modif.", sol: "Ganti busi sesuai power: >150HP pakai cold plug (C5/C6)." },
+        { name: "Overheat High Temp", rgb: [250, 250, 243], severity: "danger", ind: "Suhu kritis. Kipas radiator mati atau relay rusak.", pen: "Electric fan tidak nyala saat mesin panas.", sol: "Cek fan relay, fan motor, dan temperature switch sensor." },
+        { name: "Overheat Melt Warn", rgb: [254, 254, 254], severity: "danger", ind: "Hampir meleleh. Elektroda mulai deformasi.", pen: "Mesin dipaksa high RPM lama tanpa istirahat.", sol: "Istirahatkan mesin tiap 1 jam perjalanan. Cek oli." },
+        { name: "Overheat Pearly", rgb: [249, 249, 249], severity: "danger", ind: "Putih mutiara. Pemanasan berlebih.", pen: "Sirkulasi air radiator tersumbat scale/karat.", sol: "Radiator flush dengan chemical descaler + backflush." },
+        { name: "Overheat Glassy", rgb: [247, 247, 247], severity: "danger", ind: "Seperti kaca. Glaze insulator coating.", pen: "Busi mencapai >1100°C, insulasi bocor arus.", sol: "Ganti busi + check ignition timing (harus sesuai spek)." },
+        { name: "Overheat Ceramic", rgb: [251, 251, 251], severity: "danger", ind: "Keramik putih. Insulasi busi rusak permanen.", pen: "Thermal shock berulang (panas-dingin ekstrim).", sol: "Ganti busi + jangan siram mesin saat panas." },
+        { name: "Overheat Critical", rgb: [253, 253, 253], severity: "danger", ind: "Kritis. Metal electrode mulai mencair.", pen: "Detonasi parah, timing pengapian terlalu maju.", sol: "Retard timing 2-4°, gunakan bensin oktan lebih tinggi." },
+        { name: "Overheat Blinding", rgb: [255, 255, 252], severity: "danger", ind: "Putih menyilaukan. Bahaya kerusakan mesin.", pen: "Piston crown bisa meleleh, head gasket bisa terbakar.", sol: "STOP mesin SEGERA. Towing ke bengkel." },
+        { name: "Overheat Melted", rgb: [254, 254, 250], severity: "danger", ind: "Center electrode meleleh. Total failure.", pen: "Busi completely destroyed oleh panas ekstrim.", sol: "Ganti busi + full cooling system diagnosis + compression test." },
+        { name: "Overheat Albino", rgb: [255, 255, 255], severity: "danger", ind: "Stadium akhir overheat. Mesin dalam bahaya.", pen: "Cylinder head bisa warped, gasket blown.", sol: "Check cylinder head surface flatness + pressure test." },
+
+        // ASH & DEPOSITS (Abu/Krem) - 15 variasi
+        { name: "Ash Cream", rgb: [195, 185, 165], severity: "warning", ind: "Kerak krem. Aditif oli kualitas rendah terbakar.", pen: "ZDDP (zinc) dalam oli terbakar, deposit putih kekuningan.", sol: "Ganti ke oli fully synthetic dengan JASO MA/MA2 certified." },
+        { name: "Ash Grey", rgb: [165, 165, 165], severity: "warning", ind: "Abu-abu kapur. Bensin oktan rendah + sulfur tinggi.", pen: "Bensin non-premium dengan sulfur >500ppm.", sol: "Pindah ke Pertamax, sulfur lebih rendah (<50ppm)." },
+        { name: "Ash Sand", rgb: [205, 195, 175], severity: "warning", ind: "Kerak pasir kasar. Banyak residu mineral.", pen: "Bensin dari SPBU pinggir jalan, kontaminasi tanah/air.", sol: "Kuras tangki + gunakan SPBU brand (Pertamina/Shell)." },
+        { name: "Ash Lumpy", rgb: [185, 180, 170], severity: "warning", ind: "Gumpalan abu. Oli ikut terbakar sedikit.", pen: "Oil consumption normal <300ml/1000km tapi oli murah.", sol: "Upgrade oli ke tier lebih baik (SN→SN Plus/SP)." },
+        { name: "Ash White", rgb: [210, 210, 200], severity: "warning", ind: "Abu putih. Deposit calcium/magnesium dari aditif.", pen: "Detergent additives berlebihan dalam bensin/oli.", sol: "Ganti oli, kurangi penggunaan fuel additive berlebihan." },
+        { name: "Ash Dusty", rgb: [160, 160, 155], severity: "normal", ind: "Abu berdebu tipis. Residu aditif normal.", pen: "Oli berkualitas baik, ash content <1%.", sol: "Bersihkan busi setiap 10.000km dengan contact cleaner." },
+        { name: "Ash Cement", rgb: [150, 150, 145], severity: "warning", ind: "Abu semen keras. Pembakaran kotor lama.", pen: "Busi sudah >15.000km, deposit menumpuk.", sol: "Ganti busi baru (umur busi: iridium 30rb km, copper 10rb km)." },
+        { name: "Ash Cloudy", rgb: [178, 178, 173], severity: "normal", ind: "Abu awan. Sisa bensin dengan aditif detergent.", pen: "Shell V-Power/Pertamax Turbo dengan techron.", sol: "Normal untuk bensin premium. Cek busi setiap 6 bulan." },
+        { name: "Ash Tan", rgb: [190, 180, 160], severity: "normal", ind: "Abu tan. Aditif pembersih injector.", pen: "Efek samping fuel system cleaner/injector cleaner.", sol: "Normal jika habis pakai fuel treatment. Monitor 1 minggu." },
+        { name: "Ash Beige", rgb: [200, 190, 170], severity: "normal", ind: "Abu krem cerah. Deposit mineral rendah.", pen: "Air coolant mineral deposits minimal (pakai premixed).", sol: "Gunakan coolant premix, bukan air+concentrate." },
+        { name: "Ash Salt", rgb: [220, 215, 205], severity: "warning", ind: "Kerak garam. Bensin oplosan atau kontaminasi.", pen: "Bensin dicampur kerosene/minyak tanah.", sol: "Kuras tangki total + bersihkan fuel line + ganti filter." },
+        { name: "Ash Granular", rgb: [155, 155, 150], severity: "warning", ind: "Butiran abu kasar. Banyak kotoran terbakar.", pen: "Fuel filter sudah mampet, kotoran lolos ke injector.", sol: "Ganti fuel filter + flush fuel rail." },
+        { name: "Ash Muddy", rgb: [140, 140, 135], severity: "warning", ind: "Abu keruh. Oli & bensin sama-sama kotor.", pen: "Service diabaikan, oli + fuel filter tidak diganti.", sol: "Service berkala: ganti oli, filter udara, fuel filter." },
+        { name: "Ash Pale Grey", rgb: [192, 192, 186], severity: "normal", ind: "Abu pucat. Residu minimal, kondisi baik.", pen: "Motor terawat, oli dan bensin berkualitas.", sol: "Maintenance sudah optimal. Pertahankan." },
+        { name: "Ash Fossil", rgb: [172, 172, 166], severity: "warning", ind: "Abu tua mengeras. Kerak menahun.", pen: "Busi >20.000km, deposit sulit dibersihkan.", sol: "Wajib ganti busi. Cek gap sudah melebar >1.2mm." },
+
+        // LEAD & GLAZING (Kuning/Merah) - 15 variasi  
+        { name: "Lead Yellow", rgb: [145, 125, 65], severity: "warning", ind: "Kuning kusam. Bensin mengandung timbal (leaded).", pen: "Premium oplosan dengan bensin lama/ilegal.", sol: "STOP pakai bensin ini. Kuras tangki. Bahaya catalyst." },
+        { name: "Lead Reddish", rgb: [135, 85, 55], severity: "warning", ind: "Merah bata. Zat besi/mangan aditif berlebih.", pen: "Oktane booster berlebihan (MMT/ferrocene).", sol: "Hentikan aditif. Ganti SPBU. Bersihkan O2 sensor." },
+        { name: "Glazing Shiny", rgb: [155, 135, 75], severity: "warning", ind: "Mengkilap kuning. Suhu naik tiba-tiba, deposit meleleh.", pen: "Thermal shock, deposit membentuk glaze coating.", sol: "Ganti busi. Cek kenapa suhu spike (lean/timing/cooling)." },
+        { name: "Lead Gold", rgb: [160, 145, 85], severity: "warning", ind: "Kuning emas kusam. Sulfur tinggi di bensin.", pen: "Bensin non-subsidi kualitas rendah, S >500ppm.", sol: "Switch ke Pertamax/Shell. Sulfur <50ppm." },
+        { name: "Lead Mustard", rgb: [150, 140, 95], severity: "warning", ind: "Kuning mustard. Residu oktane booster kimia.", pen: "Penggunaan additive illegal (TEL/MTBE).", sol: "STOP additive. Risiko kerusakan catalytic converter." },
+        { name: "Lead Rusty", rgb: [125, 75, 45], severity: "warning", ind: "Berkarat merah-coklat. Air masuk ke bensin.", pen: "Tangki berkarat, air kondensasi tercampur bensin.", sol: "Kuras tangki + coating anti karat + ganti fuel pump." },
+        { name: "Glazing Amber", rgb: [140, 120, 70], severity: "warning", ind: "Warna amber. Deposit kaca dari silica/additive.", pen: "Glaze terbentuk di insulator, resistansi naik.", sol: "Ganti busi baru. Tidak bisa dibersihkan." },
+        { name: "Glazing Bronze", rgb: [130, 110, 60], severity: "warning", ind: "Warna perunggu. Overheat sesaat + deposit.", pen: "Engine knock, kemudian glaze terbentuk.", sol: "Ganti busi + retard timing + cek oktan bensin." },
+        { name: "Lead Brown Red", rgb: [115, 65, 50], severity: "warning", ind: "Merah kecoklatan. Kontaminasi zat besi.", pen: "Tangki besi berkarat, partikel besi terbakar.", sol: "Ganti tangki atau coating dengan POR-15." },
+        { name: "Lead Dull Gold", rgb: [152, 132, 82], severity: "warning", ind: "Emas kusam. Kontaminasi logam berat.", pen: "Bensin illegal dengan heavy metal additives.", sol: "Kuras sistem + service injector + ganti O2 sensor." },
+        { name: "Lead Copper", rgb: [156, 96, 66], severity: "warning", ind: "Warna tembaga. Zat kimia bensin abnormal.", pen: "Bensin oplosan dengan solvent/thinner.", sol: "Kuras bensin. Bersihkan fuel system. Ganti filter." },
+        { name: "Lead Ochre", rgb: [143, 123, 63], severity: "warning", ind: "Warna oker. Timbal tinggi (bensin era lama).", pen: "Bensin leaded (<2000) atau illegal fuel.", sol: "Jangan pakai. Merusak O2 sensor & catalytic converter." },
+        { name: "Glazing Transparent", rgb: [147, 127, 87], severity: "warning", ind: "Kuning bening. Kerak mencair lalu mengeras.", pen: "Thermal cycling, glaze coating terbentuk.", sol: "Ganti busi + investigasi penyebab overheat." },
+        { name: "Glazing Glassy", rgb: [163, 143, 103], severity: "warning", ind: "Seperti kaca licin. Suhu ekstrim berulang.", pen: "Racing usage atau modifikasi performance tinggi.", sol: "Pakai busi racing (iridium IX) heat range cold." },
+        { name: "Lead Dirty Yellow", rgb: [151, 141, 111], severity: "warning", ind: "Kuning kotor. Bensin oplosan kualitas buruk.", pen: "Mix premium + kerosene atau solar.", sol: "Kuras total. Risiko injector clogging & pump failure." }
+    ];
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const snapBtn = document.getElementById('snap');
+    const resDiv = document.getElementById('result');
+    const loading = document.getElementById('loading');
+
+    let frameCount = 0;
+
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: "environment", 
+                    width: { ideal: 1920 }, 
+                    height: { ideal: 1080 },
+                    frameRate: { ideal: 30 }
+                } 
+            });
+            video.srcObject = stream;
+            document.getElementById('status').innerText = 'ACTIVE';
+            monitorLighting();
+        } catch (e) { 
+            alert("Izin kamera diperlukan untuk menggunakan aplikasi ini!");
+            document.getElementById('status').innerText = 'ERROR';
+        }
+    }
+
+    function monitorLighting() {
+        setInterval(() => {
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let brightness = 0;
+            for(let i = 0; i < imgData.length; i += 4) {
+                brightness += (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
+            }
+            brightness = (brightness / (imgData.length / 4)).toFixed(0);
+            
+            let lightStatus = brightness < 60 ? 'TOO DARK ⚠️' : 
+                             brightness > 200 ? 'TOO BRIGHT ⚠️' : 
+                             'OPTIMAL ✓';
+            document.getElementById('lighting').innerText = lightStatus;
+            
+            frameCount++;
+            document.getElementById('samples').innerText = frameCount;
+        }, 1000);
+    }
+
+    snapBtn.onclick = () => {
+        loading.classList.add('active');
+        
+        setTimeout(() => {
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            // MULTI-POINT SAMPLING untuk akurasi tinggi
+            const sampleSize = 60;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            let totalR = 0, totalG = 0, totalB = 0;
+            let sampleCount = 0;
+            
+            // 5-point sampling pattern (center + 4 corners offset)
+            const offsets = [
+                {x: 0, y: 0},           // center
+                {x: -20, y: -20},       // top-left
+                {x: 20, y: -20},        // top-right
+                {x: -20, y: 20},        // bottom-left
+                {x: 20, y: 20}          // bottom-right
+            ];
+            
+            offsets.forEach(offset => {
+                const x = centerX + offset.x - sampleSize / 2;
+                const y = centerY + offset.y - sampleSize / 2;
+                const imgData = ctx.getImageData(x, y, sampleSize, sampleSize).data;
+                
+                for(let i = 0; i < imgData.length; i += 4) {
+                    // Gamma correction + perceptual weighting
+                    const r = Math.pow(imgData[i] / 255, 2.2);
+                    const g = Math.pow(imgData[i+1] / 255, 2.2);
+                    const b = Math.pow(imgData[i+2] / 255, 2.2);
+                    
+                    totalR += r;
+                    totalG += g;
+                    totalB += b;
+                    sampleCount++;
+                }
+            });
+
+            const avgR = totalR / sampleCount;
+            const avgG = totalG / sampleCount;
+            const avgB = totalB / sampleCount;
+
+            const finalR = Math.round(Math.pow(avgR, 1/2.2) * 255);
+            const finalG = Math.round(Math.pow(avgG, 1/2.2) * 255);
+            const finalB = Math.round(Math.pow(avgB, 1/2.2) * 255);
+
+            analyzeColor(finalR, finalG, finalB);
+        }, 800);
+    };
+
+    function analyzeColor(r, g, b) {
+        let match = LIBRARY[0];
+        let minScore = Infinity;
+
+        LIBRARY.forEach(item => {
+            // CIE76 Delta E dengan perceptual weighting
+            const dr = r - item.rgb[0];
+            const dg = g - item.rgb[1];
+            const db = b - item.rgb[2];
+            
+            // Weighted Euclidean (ITU-R BT.709 luma coefficients)
+            const score = Math.sqrt(
+                Math.pow(dr, 2) * 0.2126 +
+                Math.pow(dg, 2) * 0.7152 +
+                Math.pow(db, 2) * 0.0722
+            );
+            
+            if(score < minScore) { 
+                minScore = score; 
+                match = item; 
+            }
+        });
+
+        // Calculate confidence (0-100%)
+        const maxDistance = Math.sqrt(255*255 * 3);
+        const confidence = Math.max(0, (1 - minScore / maxDistance) * 100);
+
+        // Calculate color properties
+        const brightness = (0.2126*r + 0.7152*g + 0.0722*b).toFixed(0);
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const saturation = max === 0 ? 0 : ((max - min) / max * 100).toFixed(0);
+        
+        let hue = 0;
+        if (max !== min) {
+            if (max === r) hue = 60 * ((g - b) / (max - min));
+            else if (max === g) hue = 60 * (2 + (b - r) / (max - min));
+            else hue = 60 * (4 + (r - g) / (max - min));
+        }
+        if (hue < 0) hue += 360;
+
+        const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        
+        document.getElementById('resCol').style.backgroundColor = hex;
+        document.getElementById('resHex').innerText = `${hex} • RGB(${r}, ${g}, ${b})`;
+        document.getElementById('resName').innerText = match.name;
+        document.getElementById('resInd').innerText = match.ind;
+        document.getElementById('resPen').innerText = match.pen;
+        document.getElementById('resSol').innerText = match.sol;
+        
+        document.getElementById('confidence').style.width = confidence + '%';
+        document.getElementById('confText').innerText = `Confidence: ${confidence.toFixed(1)}% • Match Distance: ${minScore.toFixed(2)}`;
+        
+        const severityEl = document.getElementById('severity');
+        severityEl.innerText = match.severity.toUpperCase();
+        severityEl.className = 'severity-indicator severity-' + match.severity;
+        
+        document.getElementById('brightness').innerText = brightness;
+        document.getElementById('saturation').innerText = saturation + '%';
+        document.getElementById('hue').innerText = hue.toFixed(0) + '°';
+        document.getElementById('matchScore').innerText = (100 - minScore).toFixed(1);
+
+        loading.classList.remove('active');
+        resDiv.style.display = 'block';
+        snapBtn.style.display = 'none';
+        document.getElementById('scanInfo').style.display = 'none';
+        video.pause();
+    }
+
+    function resetScan() {
+        resDiv.style.display = 'none';
+        snapBtn.style.display = 'block';
+        document.getElementById('scanInfo').style.display = 'block';
+        video.play();
+    }
+
+    window.onload = startCamera;
+</script>
 </body>
-</html>
+</html></html>
