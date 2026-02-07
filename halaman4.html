@@ -1,168 +1,144 @@
-<a href="index.html" style="color: yellow; text-decoration: none; padding: 10px; display: inline-block;">⬅ Kembali ke Dashboard</a>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Quiz Otomotif - Skor Real-Time</title>
-    <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --white: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--white); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .header { background: linear-gradient(135deg, #1e293b 0%, #020617 100%); width: 100%; padding: 20px; text-align: center; border-bottom: 3px solid var(--accent); }
-        .quiz-container { max-width: 600px; width: 90%; background: var(--card); margin-top: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
-        
-        /* Skor Board Style */
-        .score-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #020617; padding: 15px; border-radius: 15px; border: 1px solid #334155; }
-        .stat-item { text-align: center; }
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
-        .stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Quiz Otomotif</title>
 
-        .question-text { font-size: 1.1rem; line-height: 1.4; margin-bottom: 20px; min-height: 60px; }
-        .options { display: grid; gap: 12px; }
-        .btn-opt { background: #334155; border: 2px solid #475569; color: white; padding: 15px; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; }
-        .btn-opt:hover { border-color: var(--accent); background: #1e293b; }
-        
-        .result-badge { font-size: 0.9rem; font-weight: bold; padding: 5px 10px; border-radius: 5px; margin-bottom: 10px; display: inline-block; }
-        .correct { background: #16a34a; color: white; }
-        .wrong { background: #dc2626; color: white; }
-    </style>
+<style>
+:root {
+    --bg:#0f172a; --card:#1e293b; --accent:#fbbf24; --white:#f8fafc;
+}
+body{
+    margin:0; font-family:Segoe UI,sans-serif;
+    background:var(--bg); color:var(--white);
+    display:flex; flex-direction:column; align-items:center;
+}
+.header{
+    width:100%; text-align:center; padding:20px;
+    background:linear-gradient(135deg,#1e293b,#020617);
+    border-bottom:3px solid var(--accent);
+}
+.quiz-container{
+    max-width:600px; width:90%;
+    background:var(--card); margin-top:20px;
+    padding:25px; border-radius:20px;
+}
+.score-panel{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:10px; background:#020617;
+    padding:15px; border-radius:15px;
+    margin-bottom:20px;
+}
+.stat-item{text-align:center}
+.stat-value{color:var(--accent); font-weight:bold}
+.question-text{margin-bottom:20px}
+.options{display:grid; gap:12px}
+.btn-opt{
+    padding:14px; border-radius:12px;
+    background:#334155; color:white;
+    border:2px solid #475569; cursor:pointer;
+}
+.btn-opt:hover{border-color:var(--accent)}
+</style>
 </head>
+
 <body>
 
-    <div class="header">
-        <h1>E-EXAM OTOMOTIF</h1>
-        <p>Analisis & Troubleshooting Sepeda Motor</p>
-    </div>
+<a href="index.html" style="color:var(--accent);margin-top:10px;text-decoration:none">
+⬅ Kembali ke Dashboard
+</a>
 
-    <div class="quiz-container">
-        <div class="score-panel">
-            <div class="stat-item">
-                <div class="stat-label">Benar</div>
-                <div class="stat-value" id="count-benar">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Salah</div>
-                <div class="stat-value" id="count-salah">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Nilai Akhir</div>
-                <div class="stat-value" id="final-grade">0</div>
-            </div>
+<div class="header">
+    <h1>E-EXAM OTOMOTIF</h1>
+    <p>Analisis & Troubleshooting Sepeda Motor</p>
+</div>
+
+<div class="quiz-container" id="quiz">
+    <div class="score-panel">
+        <div class="stat-item">
+            <div>Benar</div><div id="benar" class="stat-value">0</div>
         </div>
-
-        <div id="quiz-box">
-            <div id="feedback-area"></div>
-            <div class="question-text" id="q-text">Mempersiapkan soal...</div>
-            <div class="options" id="q-options"></div>
+        <div class="stat-item">
+            <div>Salah</div><div id="salah" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+            <div>Nilai</div><div id="nilai" class="stat-value">0</div>
         </div>
     </div>
 
-    <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.6;">Total Soal Dikerjakan: <span id="total-done">0</span></p>
-    <a href="index.html" style="margin-top: 10px; color: var(--accent); text-decoration: none;">⬅ Kembali ke Menu</a>
+    <div id="q-text" class="question-text">Memuat soal…</div>
+    <div id="q-options" class="options"></div>
+</div>
 
-    <script>
-        const bankSoal = [
-            { q: "Rantai roda sering kendur meski sudah disetel. Setelah dicek, mata gir masih tajam. Apa diagnosa Anda?", opt: ["Mata rantai sudah mulur (aus tidak merata)", "Swing arm bengkok sedikit"], ans: "Mata rantai sudah mulur (aus tidak merata)" },
-            { q: "Tekanan kompresi tinggi tapi motor ngempos saat panas. Hasil cek: celah klep terlalu rapat. Mengapa?", opt: ["Klep memuai dan tidak menutup rapat", "Bahan bakar terlalu irit"], ans: "Klep memuai dan tidak menutup rapat" },
-            { q: "Rem cakram depan terasa 'baggy' atau membal saat ditekan. Apa penyebab paling logis?", opt: ["Ada udara terjebak di selang rem (masuk angin)", "Piringan cakram kotor berminyak"], ans: "Ada udara terjebak di selang rem (masuk angin)" },
-            { q: "Motor matic bergetar hebat saat akselerasi awal (putaran rendah). Komponen mana yang bermasalah?", opt: ["Kampas ganda kotor atau rumah kopling peyang", "V-belt sudah retak-retak"], ans: "Kampas ganda kotor atau rumah kopling peyang" },
-            { q: "Warna busi putih bersih (pucat). Hal ini mengindikasikan bahwa campuran bahan bakar...", opt: ["Terlalu Miskin (Kebanyakan Udara)", "Terlalu Kaya (Kebanyakan Bensin)"], ans: "Terlalu Miskin (Kebanyakan Udara)" }
-            // Copy bagian ini dan masukkan ke dalam const bankSoal = [ ... ]
-{ q: "Motor Injeksi brebet saat akselerasi, tapi langsam normal. Hasil cek tekanan fuel pump 294 kPa (standar). Apa kemungkinan diagnosa lain?", opt: ["Saringan udara sangat kotor / buntu", "Rotak lemah"], ans: "Saringan udara sangat kotor / buntu" },
-{ q: "Muncul suara decit (squeaking) dari bagian belakang motor matic saat mulai jalan. Diagnosa bagian CVT adalah?", opt: ["Kampas ganda kotor atau slip pada mangkok", "V-belt terlalu longgar"], ans: "Kampas ganda kotor atau rumah mangkok slip" },
-{ q: "Busi berwarna hitam kering dan berjelaga tebal. Apa masalah pada sistem pembakarannya?", opt: ["Campuran bahan bakar terlalu kaya (boros bensin)", "Mesin kelebihan oli mesin (bocor seal klep)"], ans: "Campuran bahan bakar terlalu kaya (boros bensin)" },
-// =========================================================================================
-// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// =========================================================================================
-                { q: "Apa dampak bagi pengendalian jika 'Fork Height' (ketinggian shock depan) diturunkan terlalu banyak?", opt: ["Motor lincah di tikungan tapi tidak stabil di jalan lurus", "Motor menjadi sangat stabil di jalan berlubang"], ans: "Motor lincah di tikungan tapi tidak stabil di jalan lurus" },
-{ q: "Apa kegunaan dari 'Shift Cam' (drum pemindah gigi) pada transmisi manual?", opt: ["Mengatur urutan perpindahan gigi saat tuas persneling diinjak", "Menghubungkan putaran mesin ke kruk as"], ans: "Mengatur urutan perpindahan gigi saat tuas persneling diinjak" },
-{ q: "Mengapa pada sistem LED, cahaya putih lebih sulit menembus kabut tebal dibanding cahaya kuning?", opt: ["Panjang gelombang cahaya putih lebih pendek dan mudah terbiaskan", "Cahaya putih suhunya terlalu dingin"], ans: "Panjang gelombang cahaya putih lebih pendek dan mudah terbiaskan" },
-{ q: "Apa fungsi 'Circlip' pada as shockbreaker depan?", opt: ["Menahan seal shock agar tidak terlepas dari tabungnya", "Menyaring kotoran agar tidak masuk ke oli"], ans: "Menahan seal shock agar tidak terlepas dari tabungnya" },
-{ q: "Jika 'Clutch Hub' (rumah kopling) pada motor sport oblak, suara mesin akan berisik saat?", opt: ["Mesin dalam kondisi stasioner (idle) tanpa ditarik tuas kopling", "Saat motor dipacu pada kecepatan maksimal"], ans: "Mesin dalam kondisi stasioner (idle) tanpa ditarik tuas kopling" },
-{ q: "Apa tujuan penggunaan nitrogen (N2) pada tabung shockbreaker belakang (Monoshock)?", opt: ["Mencegah terjadinya kavitasi (gelembung udara) pada oli shock", "Agar shockbreaker terasa lebih dingin"], ans: "Mencegah terjadinya kavitasi (gelembung udara) pada oli shock" },
-{ q: "Sistem 'Daytime Running Light' (DRL) pada motor berfungsi untuk?", opt: ["Meningkatkan visibilitas motor agar terlihat pengendara lain di siang hari", "Menerangi jalan saat kondisi sangat gelap gulita"], ans: "Meningkatkan visibilitas motor agar terlihat pengendara lain di siang hari" },
-{ q: "Apa fungsi dari 'Needle Bearing' yang ada di ujung as kopling?", opt: ["Mendukung putaran as agar halus dan minim gesekan", "Menahan agar oli tidak rembes ke luar"], ans: "Mendukung putaran as agar halus dan minim gesekan" }  
-  // =========================================================================================
-// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS: SESI SST & K3 (400) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// =========================================================================================
-{ q: "Alat yang paling tepat untuk melepas magnet motor tanpa digetok adalah?", opt: ["Tracker Magnet (Flywheel Puller)", "Kunci Inggris"], ans: "Tracker Magnet (Flywheel Puller)" },
-{ q: "Saat mengencangkan baut kepala silinder, mengapa harus menggunakan Kunci Torsi?", opt: ["Agar kekencangan baut merata dan mencegah kebocoran/melengkung", "Agar baut tidak bisa dibuka lagi"], ans: "Agar kekencangan baut merata dan mencegah kebocoran/melengkung" },
-{ q: "Fungsi dari 'Feeler Gauge' pada penyetelan klep adalah?", opt: ["Mengukur celah renggang antara ujung batang klep dengan baut pelatuk", "Mengukur diameter batang klep"], ans: "Mengukur celah renggang antara ujung batang klep dengan baut pelatuk" },
-{ q: "Apa kegunaan 'Impact Driver' (Obeng Getok) di bengkel?", opt: ["Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan", "Mengukur tekanan kompresi"], ans: "Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan" },
-{ q: "Alat ukur yang memiliki tingkat ketelitian 0,01 mm dan digunakan untuk diameter luar piston adalah?", opt: ["Mikrometer Luar", "Jangka Sorong"], ans: "Mikrometer Luar" },
-{ q: "Mengapa mekanik wajib menggunakan sepatu safety saat bekerja di bengkel?", opt: ["Melindungi kaki dari tumpahan oli dan jatuhnya benda berat", "Agar terlihat lebih rapi dan keren"], ans: "Melindungi kaki dari tumpahan oli dan jatuhnya benda berat" },
-{ q: "Apa fungsi dari 'Valve Spring Compressor'?", opt: ["Melepas dan memasang pengunci klep pada kepala silinder", "Mengukur kekuatan pegas klep"], ans: "Melepas dan memasang pengunci klep pada kepala silinder" },
-{ q: "Saat terjadi kebakaran akibat korsleting listrik di bengkel, jenis APAR apa yang paling tepat?", opt: ["APAR jenis CO2 atau Powder", "Air bertekanan tinggi"], ans: "APAR jenis CO2 atau Powder" },
-{ q: "Apa kegunaan dari 'Dial Gauge' saat memeriksa kruk as?", opt: ["Mengukur keolengan (run-out) poros kruk as", "Mengukur berat kruk as"], ans: "Mengukur keolengan (run-out) poros kruk as" },
-        ];
+<script>
+const bankSoal = [
+ {q:"Warna busi putih bersih menunjukkan…",
+  opt:["Campuran miskin","Campuran kaya"],
+  ans:"Campuran miskin"},
+ {q:"Rem cakram terasa membal, penyebabnya?",
+  opt:["Udara di sistem","Cakram berminyak"],
+  ans:"Udara di sistem"},
+ {q:"Fungsi feeler gauge?",
+  opt:["Mengukur celah klep","Mengukur diameter"],
+  ans:"Mengukur celah klep"},
+ {q:"Alat melepas magnet tanpa dipukul?",
+  opt:["Flywheel puller","Kunci inggris"],
+  ans:"Flywheel puller"},
+ {q:"APAR untuk korsleting listrik?",
+  opt:["CO2 / Powder","Air"],
+  ans:"CO2 / Powder"}
+];
 
-        let skorBenar = 0;
-        let skorSalah = 0;
-        let totalDikerjakan = 0;
+let soal=[], index=0, benar=0, salah=0;
 
-        function updateDisplay() {
-            document.getElementById('count-benar').innerText = skorBenar;
-            document.getElementById('count-salah').innerText = skorSalah;
-            document.getElementById('total-done').innerText = totalDikerjakan;
-            
-            // Hitung Nilai (0-100)
-            let nilai = totalDikerjakan === 0 ? 0 : Math.round((skorBenar / totalDikerjakan) * 100);
-            document.getElementById('final-grade').innerText = nilai;
-        }
-
-        // --- BAGIAN LOGIKA SISTEM 10 SOAL ---
-let soalTerpilih = []; // Tempat menyimpan 10 soal acak
-let indexSekarang = 0;
-let skor = 0;
-
-function mulaiKuis() {
-    // 1. Acak seluruh bank soal, lalu ambil 10 saja
-    soalTerpilih = [...bankSoal].sort(() => Math.random() - 0.5).slice(0, 10);
-    
-    skor = 0;
-    indexSekarang = 0;
-    tampilkanSoal();
+function acak(arr){
+    return arr.sort(()=>Math.random()-0.5);
 }
 
-function tampilkanSoal() {
-    if (indexSekarang < soalTerpilih.length) {
-        const data = soalTerpilih[indexSekarang];
-        document.getElementById("question").innerText = `Soal ${indexSekarang + 1}: ${data.q}`;
-        
-        const optionsDiv = document.getElementById("options");
-        optionsDiv.innerHTML = "";
-        
-        data.opt.forEach(pilihan => {
-            const btn = document.createElement("button");
-            btn.innerText = pilihan;
-            btn.onclick = () => cekJawaban(pilihan);
-            optionsDiv.appendChild(btn);
-        });
-    } else {
-        tampilkanHasil();
+function render(){
+    if(index>=soal.length){
+        document.getElementById("q-text").innerHTML =
+        `<b>Kuis selesai</b><br>Benar ${benar} dari ${soal.length}`;
+        document.getElementById("q-options").innerHTML="";
+        return;
     }
+
+    const s=soal[index];
+    document.getElementById("q-text").innerText =
+        `Soal ${index+1}: ${s.q}`;
+
+    const optBox=document.getElementById("q-options");
+    optBox.innerHTML="";
+
+    s.opt.forEach(o=>{
+        const b=document.createElement("button");
+        b.className="btn-opt";
+        b.innerText=o;
+        b.onclick=()=>jawab(o);
+        optBox.appendChild(b);
+    });
 }
 
-function cekJawaban(jawabanUser) {
-    if (jawabanUser === soalTerpilih[indexSekarang].ans) {
-        skor++;
-    }
-    indexSekarang++;
-    tampilkanSoal();
+function jawab(pilih){
+    pilih===soal[index].ans ? benar++ : salah++;
+    index++;
+    updateScore();
+    render();
 }
 
-function tampilkanHasil() {
-    const totalPoint = (skor / soalTerpilih.length) * 100;
-    document.getElementById("quiz-container").innerHTML = `
-        <h2>Kuis Selesai!</h2>
-        <p>Jawaban Benar: ${skor} dari 10 soal</p>
-        <h1 style="font-size: 50px;">Point: ${totalPoint}</h1>
-        <button onclick="location.reload()">Ulangi Kuis (Soal Baru)</button>
-    `;
+function updateScore(){
+    document.getElementById("benar").innerText=benar;
+    document.getElementById("salah").innerText=salah;
+    document.getElementById("nilai").innerText=
+        Math.round((benar/(benar+salah))*100)||0;
 }
 
-// Jalankan fungsi mulaiKuis saat halaman dibuka
-window.onload = mulaiKuis;
-    </script>
+document.addEventListener("DOMContentLoaded",()=>{
+    soal=acak([...bankSoal]).slice(0,5);
+    render();
+});
+</script>
+
 </body>
 </html>
