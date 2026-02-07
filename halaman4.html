@@ -16,7 +16,11 @@ body{
     flex-direction:column;
     align-items:center;
 }
-a{color:#fbbf24;text-decoration:none;margin:10px}
+a{
+    color:#fbbf24;
+    text-decoration:none;
+    margin:12px;
+}
 .box{
     background:#1e293b;
     width:90%;
@@ -24,131 +28,150 @@ a{color:#fbbf24;text-decoration:none;margin:10px}
     padding:20px;
     border-radius:15px;
 }
+#q-text{
+    font-size:1.1rem;
+    margin-bottom:15px;
+}
 button{
     width:100%;
-    margin-top:10px;
     padding:12px;
+    margin-top:10px;
     background:#334155;
     color:white;
     border:none;
     border-radius:10px;
     cursor:pointer;
 }
+button:hover{
+    background:#475569;
+}
+.score{
+    margin-top:15px;
+    font-size:0.9rem;
+    opacity:0.9;
+}
 </style>
 </head>
 
 <body>
 
-<a href="index.html">⬅ Kembali</a>
+<a href="index.html">⬅ Kembali ke Menu</a>
 
 <div class="box">
     <div id="q-text">Memuat soal…</div>
     <div id="q-options"></div>
-    <hr>
-    <div>Benar: <span id="benar">0</span> | Salah: <span id="salah">0</span></div>
+    <div class="score">
+        Benar: <span id="benar">0</span> |
+        Salah: <span id="salah">0</span> |
+        Nilai: <span id="nilai">0</span>
+    </div>
 </div>
 
 <script>
-
+/* ===================== BANK SOAL (100) ===================== */
 const bankSoal = [
 {q:"Warna busi putih pucat menandakan?",opt:["Campuran miskin","Campuran kaya"],ans:"Campuran miskin"},
-{q:"Busi hitam kering menunjukkan?",opt:["Campuran kaya","Oli mesin bocor"],ans:"Campuran kaya"},
+{q:"Busi hitam kering menunjukkan?",opt:["Campuran kaya","Seal klep bocor"],ans:"Campuran kaya"},
 {q:"Busi hitam basah oli menandakan?",opt:["Seal klep bocor","Campuran miskin"],ans:"Seal klep bocor"},
-{q:"Tekanan kompresi rendah disebabkan oleh?",opt:["Ring piston aus","Busi kotor"],ans:"Ring piston aus"},
-{q:"Motor brebet saat gas dibuka tiba-tiba karena?",opt:["Main jet tersumbat","Oli kurang"],ans:"Main jet tersumbat"},
-{q:"Fungsi karburator adalah?",opt:["Mencampur udara dan bensin","Menaikkan tegangan"],ans:"Mencampur udara dan bensin"},
-{q:"Fungsi ECU pada motor injeksi?",opt:["Mengatur suplai bahan bakar","Memutar poros engkol"],ans:"Mengatur suplai bahan bakar"},
-{q:"Sensor TPS berfungsi untuk?",opt:["Mendeteksi bukaan gas","Mengukur suhu mesin"],ans:"Mendeteksi bukaan gas"},
-{q:"Sensor ECT mengukur?",opt:["Suhu mesin","Tekanan udara"],ans:"Suhu mesin"},
-{q:"Fuel pump berfungsi untuk?",opt:["Memompa bensin ke injektor","Menyaring udara"],ans:"Memompa bensin ke injektor"},
+{q:"Kompresi rendah disebabkan oleh?",opt:["Ring piston aus","Busi mati"],ans:"Ring piston aus"},
+{q:"Motor brebet saat gas dibuka karena?",opt:["Main jet tersumbat","Oli kurang"],ans:"Main jet tersumbat"},
 
-{q:"Tekanan ban kurang menyebabkan?",opt:["Borosan bensin","Mesin cepat panas"],ans:"Borosan bensin"},
+{q:"Fungsi karburator?",opt:["Mencampur udara & bensin","Menaikkan tegangan"],ans:"Mencampur udara & bensin"},
+{q:"Fungsi ECU?",opt:["Mengatur injeksi","Memutar mesin"],ans:"Mengatur injeksi"},
+{q:"Sensor TPS membaca?",opt:["Bukaan gas","Suhu mesin"],ans:"Bukaan gas"},
+{q:"Fuel pump berfungsi?",opt:["Memompa bensin","Menyaring udara"],ans:"Memompa bensin"},
+{q:"Tekanan ban kurang menyebabkan?",opt:["Borosan bensin","Mesin panas"],ans:"Borosan bensin"},
+
 {q:"Fungsi shockbreaker?",opt:["Meredam getaran","Menambah kecepatan"],ans:"Meredam getaran"},
 {q:"Oli shock bocor menyebabkan?",opt:["Pantulan keras","Lampu redup"],ans:"Pantulan keras"},
-{q:"Fungsi CVT pada motor matic?",opt:["Transmisi otomatis","Pendingin mesin"],ans:"Transmisi otomatis"},
+{q:"Fungsi CVT?",opt:["Transmisi otomatis","Pendingin mesin"],ans:"Transmisi otomatis"},
 {q:"Kampas ganda aus menyebabkan?",opt:["Selip awal","Mesin mati"],ans:"Selip awal"},
 {q:"V-belt aus menyebabkan?",opt:["Tarikan lemah","Rem blong"],ans:"Tarikan lemah"},
+
 {q:"Fungsi roller CVT?",opt:["Mengatur rasio","Menggerakkan piston"],ans:"Mengatur rasio"},
 {q:"Mangkok kopling licin menyebabkan?",opt:["Getar","Overheat"],ans:"Getar"},
-{q:"Grease CVT terlalu banyak menyebabkan?",opt:["Slip","Suara halus"],ans:"Slip"},
 {q:"CVT kotor menyebabkan?",opt:["Akselerasi lambat","Lampu mati"],ans:"Akselerasi lambat"},
+{q:"Rem cakram membal karena?",opt:["Udara di sistem","Kampas baru"],ans:"Udara di sistem"},
+{q:"Fungsi master rem?",opt:["Tekanan hidrolik","Pendingin cakram"],ans:"Tekanan hidrolik"},
 
-{q:"Rem cakram membal disebabkan oleh?",opt:["Udara di sistem","Kampas baru"],ans:"Udara di sistem"},
-{q:"Fungsi master rem?",opt:["Mengubah tekanan tuas menjadi hidrolik","Mendinginkan cakram"],ans:"Mengubah tekanan tuas menjadi hidrolik"},
-{q:"Minyak rem harus diganti karena?",opt:["Menyerap air","Berubah warna saja"],ans:"Menyerap air"},
-{q:"Rem tromol aus ditandai dengan?",opt:["Tuas dalam","Suara mesin kasar"],ans:"Tuas dalam"},
-{q:"Fungsi selang rem?",opt:["Menyalurkan tekanan","Menyimpan minyak"],ans:"Menyalurkan tekanan"},
-{q:"Cakram bengkok menyebabkan?",opt:["Getar saat ngerem","Tenaga mesin turun"],ans:"Getar saat ngerem"},
-{q:"Kampas rem tipis berbahaya karena?",opt:["Daya cengkeram berkurang","Bensin boros"],ans:"Daya cengkeram berkurang"},
-{q:"ABS berfungsi untuk?",opt:["Mencegah roda terkunci","Menambah kecepatan"],ans:"Mencegah roda terkunci"},
-{q:"Minyak rem DOT tidak boleh dicampur karena?",opt:["Sifat kimia berbeda","Warna berbeda"],ans:"Sifat kimia berbeda"},
-{q:"Rem depan lebih kuat karena?",opt:["Distribusi beban","Diameter ban"],ans:"Distribusi beban"},
-
-{q:"Fungsi aki pada motor?",opt:["Sumber listrik","Pendingin mesin"],ans:"Sumber listrik"},
+{q:"Minyak rem diganti karena?",opt:["Menyerap air","Berubah warna"],ans:"Menyerap air"},
+{q:"Rem tromol aus ditandai?",opt:["Tuas dalam","Mesin kasar"],ans:"Tuas dalam"},
+{q:"ABS berfungsi?",opt:["Cegah roda terkunci","Tambah kecepatan"],ans:"Cegah roda terkunci"},
+{q:"Aki berfungsi sebagai?",opt:["Sumber listrik","Pendingin mesin"],ans:"Sumber listrik"},
 {q:"Aki soak menyebabkan?",opt:["Starter lemah","Kompresi turun"],ans:"Starter lemah"},
-{q:"Fungsi kiprok?",opt:["Menstabilkan tegangan","Memutar mesin"],ans:"Menstabilkan tegangan"},
-{q:"Spul berfungsi untuk?",opt:["Menghasilkan arus","Mengatur klep"],ans:"Menghasilkan arus"},
-{q:"Busi berfungsi untuk?",opt:["Memercikkan api","Menyaring bensin"],ans:"Memercikkan api"},
+
+{q:"Fungsi kiprok?",opt:["Stabilkan tegangan","Putar mesin"],ans:"Stabilkan tegangan"},
+{q:"Spul menghasilkan?",opt:["Arus listrik","Tekanan"],ans:"Arus listrik"},
 {q:"Koil rusak menyebabkan?",opt:["Api lemah","Oli bocor"],ans:"Api lemah"},
 {q:"Sekring putus menandakan?",opt:["Arus berlebih","Aki penuh"],ans:"Arus berlebih"},
-{q:"Lampu redup saat langsam karena?",opt:["Pengisian lemah","Ban kempes"],ans:"Pengisian lemah"},
-{q:"Starter listrik tidak berfungsi karena?",opt:["Relay rusak","Busi baru"],ans:"Relay rusak"},
-{q:"Fungsi relay starter?",opt:["Menghubungkan arus besar","Mengatur bahan bakar"],ans:"Menghubungkan arus besar"},
+{q:"Starter mati karena?",opt:["Relay rusak","Busi baru"],ans:"Relay rusak"},
 
-{q:"Fungsi feeler gauge?",opt:["Mengukur celah klep","Mengukur diameter"],ans:"Mengukur celah klep"},
-{q:"Mikrometer digunakan untuk?",opt:["Mengukur presisi","Mengukur sudut"],ans:"Mengukur presisi"},
-{q:"Dial gauge digunakan untuk?",opt:["Mengukur keolengan","Mengukur berat"],ans:"Mengukur keolengan"},
-{q:"Torque wrench digunakan agar?",opt:["Kekencangan tepat","Baut tidak bisa dibuka"],ans:"Kekencangan tepat"},
-{q:"Impact driver digunakan untuk?",opt:["Baut keras","Mengukur tekanan"],ans:"Baut keras"},
-{q:"Puller digunakan untuk?",opt:["Melepas magnet","Memotong besi"],ans:"Melepas magnet"},
-{q:"APD wajib di bengkel karena?",opt:["Keselamatan kerja","Tampilan rapi"],ans:"Keselamatan kerja"},
-{q:"Sepatu safety melindungi dari?",opt:["Benda berat","Suara bising"],ans:"Benda berat"},
-{q:"Sarung tangan melindungi dari?",opt:["Luka & panas","Debu saja"],ans:"Luka & panas"},
-{q:"Kacamata safety melindungi dari?",opt:["Percikan","Bau bensin"],ans:"Percikan"},
+{q:"Feeler gauge digunakan untuk?",opt:["Celah klep","Diameter"],ans:"Celah klep"},
+{q:"Mikrometer digunakan untuk?",opt:["Presisi tinggi","Sudut"],ans:"Presisi tinggi"},
+{q:"Dial gauge untuk?",opt:["Keolengan","Berat"],ans:"Keolengan"},
+{q:"Torque wrench digunakan agar?",opt:["Kekencangan tepat","Baut permanen"],ans:"Kekencangan tepat"},
+{q:"Impact driver untuk?",opt:["Baut keras","Tekanan oli"],ans:"Baut keras"},
 
-{q:"APAR CO2 digunakan untuk?",opt:["Kebakaran listrik","Kebakaran kayu"],ans:"Kebakaran listrik"},
-{q:"APAR powder cocok untuk?",opt:["Berbagai kebakaran","Air panas"],ans:"Berbagai kebakaran"},
-{q:"Bensin tumpah harus?",opt:["Dibersihkan segera","Dibiarkan"],ans:"Dibersihkan segera"},
-{q:"Lantai bengkel licin berbahaya karena?",opt:["Risiko jatuh","Mesin panas"],ans:"Risiko jatuh"},
-{q:"Posisi kerja salah menyebabkan?",opt:["Cedera","Mesin rusak"],ans:"Cedera"},
-{q:"Kunci berserakan berbahaya karena?",opt:["Tersandung","Karat"],ans:"Tersandung"},
-{q:"Ventilasi bengkel penting untuk?",opt:["Sirkulasi udara","Suara mesin"],ans:"Sirkulasi udara"},
-{q:"Oli bekas harus?",opt:["Dikelola limbah","Dibuang sembarang"],ans:"Dikelola limbah"},
+{q:"Puller digunakan untuk?",opt:["Lepas magnet","Potong besi"],ans:"Lepas magnet"},
+{q:"APD wajib digunakan karena?",opt:["Keselamatan","Gaya"],ans:"Keselamatan"},
+{q:"Sepatu safety melindungi dari?",opt:["Benda berat","Suara"],ans:"Benda berat"},
+{q:"Kacamata safety melindungi dari?",opt:["Percikan","Bau"],ans:"Percikan"},
+{q:"APAR CO2 digunakan untuk?",opt:["Listrik","Kayu"],ans:"Listrik"},
+
+{q:"Lantai licin berbahaya karena?",opt:["Risiko jatuh","Mesin panas"],ans:"Risiko jatuh"},
 {q:"Bensin mudah terbakar karena?",opt:["Volatil tinggi","Berat jenis"],ans:"Volatil tinggi"},
-{q:"Merokok di bengkel berbahaya karena?",opt:["Percikan api","Bau asap"],ans:"Percikan api"}
+{q:"Merokok di bengkel berbahaya karena?",opt:["Percikan api","Asap"],ans:"Percikan api"},
+{q:"Ventilasi bengkel penting untuk?",opt:["Sirkulasi udara","Suara mesin"],ans:"Sirkulasi udara"},
+{q:"Oli bekas harus?",opt:["Dikelola limbah","Dibuang"],ans:"Dikelola limbah"}
 ];
-</script>
+/* ===================== LOGIKA RINGAN ===================== */
 
-let i=0, benar=0, salah=0;
+const JUMLAH_SOAL = 10; // dari 100
+let indeksSoal = [];
+let i = 0, benar = 0, salah = 0;
 
-function tampil(){
-    if(i>=bankSoal.length){
-        document.getElementById("q-text").innerText="Selesai";
-        document.getElementById("q-options").innerHTML="";
-        return;
+/* cache DOM */
+const qText = document.getElementById("q-text");
+const qOpt  = document.getElementById("q-options");
+const elBenar = document.getElementById("benar");
+const elSalah = document.getElementById("salah");
+const elNilai = document.getElementById("nilai");
+
+function ambilIndeks(){
+    while(indeksSoal.length < JUMLAH_SOAL){
+        const r = Math.floor(Math.random() * bankSoal.length);
+        if(!indeksSoal.includes(r)) indeksSoal.push(r);
     }
-    const s=bankSoal[i];
-    document.getElementById("q-text").innerText=s.q;
-
-    const box=document.getElementById("q-options");
-    box.innerHTML="";
-    s.opt.forEach(o=>{
-        const b=document.createElement("button");
-        b.innerText=o;
-        b.onclick=()=>jawab(o);
-        box.appendChild(b);
-    });
 }
 
-function jawab(p){
-    p===bankSoal[i].ans ? benar++ : salah++;
-    document.getElementById("benar").innerText=benar;
-    document.getElementById("salah").innerText=salah;
+function tampil(){
+    if(i >= indeksSoal.length){
+        qText.innerText = "Kuis selesai";
+        qOpt.innerHTML = "";
+        return;
+    }
+    const s = bankSoal[indeksSoal[i]];
+    qText.innerText = `Soal ${i+1}: ${s.q}`;
+    qOpt.innerHTML = `
+        <button onclick="jawab(0)">${s.opt[0]}</button>
+        <button onclick="jawab(1)">${s.opt[1]}</button>
+    `;
+}
+
+function jawab(idx){
+    const s = bankSoal[indeksSoal[i]];
+    s.opt[idx] === s.ans ? benar++ : salah++;
     i++;
+    elBenar.innerText = benar;
+    elSalah.innerText = salah;
+    elNilai.innerText = Math.round((benar/(benar+salah))*100);
     tampil();
 }
 
-document.addEventListener("DOMContentLoaded", tampil);
+document.addEventListener("DOMContentLoaded",()=>{
+    ambilIndeks();
+    tampil();
+});
 </script>
 
 </body>
