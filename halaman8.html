@@ -1,0 +1,250 @@
+<a href="index.html" style="color: yellow; text-decoration: none; padding: 10px; display: inline-block;">⬅ Kembali ke Dashboard</a>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Quiz Otomotif - Skor Real-Time</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --white: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--white); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #1e293b 0%, #020617 100%); width: 100%; padding: 20px; text-align: center; border-bottom: 3px solid var(--accent); }
+        .quiz-container { max-width: 600px; width: 90%; background: var(--card); margin-top: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
+        
+        /* Skor Board Style */
+        .score-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #020617; padding: 15px; border-radius: 15px; border: 1px solid #334155; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; }
+
+        .question-text { font-size: 1.1rem; line-height: 1.4; margin-bottom: 20px; min-height: 60px; }
+        .options { display: grid; gap: 12px; }
+        .btn-opt { background: #334155; border: 2px solid #475569; color: white; padding: 15px; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; }
+        .btn-opt:hover { border-color: var(--accent); background: #1e293b; }
+        
+        .result-badge { font-size: 0.9rem; font-weight: bold; padding: 5px 10px; border-radius: 5px; margin-bottom: 10px; display: inline-block; }
+        .correct { background: #16a34a; color: white; }
+        .wrong { background: #dc2626; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>E-EXAM OTOMOTIF</h1>
+        <p>Analisis & Troubleshooting Sepeda Motor</p>
+    </div>
+
+    <div class="quiz-container">
+        <div class="score-panel">
+            <div class="stat-item">
+                <div class="stat-label">Benar</div>
+                <div class="stat-value" id="count-benar">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Salah</div>
+                <div class="stat-value" id="count-salah">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Nilai Akhir</div>
+                <div class="stat-value" id="final-grade">0</div>
+            </div>
+        </div>
+
+        <div id="quiz-box">
+            <div id="feedback-area"></div>
+            <div class="question-text" id="q-text">Mempersiapkan soal...</div>
+            <div class="options" id="q-options"></div>
+        </div>
+    </div>
+
+    <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.6;">Total Soal Dikerjakan: <span id="total-done">0</span></p>
+    <a href="index.html" style="margin-top: 10px; color: var(--accent); text-decoration: none;">⬅ Kembali ke Menu</a>
+
+    <script>
+        const bankSoal = [
+            { q: "Rantai roda sering kendur meski sudah disetel. Setelah dicek, mata gir masih tajam. Apa diagnosa Anda?", opt: ["Mata rantai sudah mulur (aus tidak merata)", "Swing arm bengkok sedikit"], ans: "Mata rantai sudah mulur (aus tidak merata)" },
+            { q: "Tekanan kompresi tinggi tapi motor ngempos saat panas. Hasil cek: celah klep terlalu rapat. Mengapa?", opt: ["Klep memuai dan tidak menutup rapat", "Bahan bakar terlalu irit"], ans: "Klep memuai dan tidak menutup rapat" },
+            { q: "Rem cakram depan terasa 'baggy' atau membal saat ditekan. Apa penyebab paling logis?", opt: ["Ada udara terjebak di selang rem (masuk angin)", "Piringan cakram kotor berminyak"], ans: "Ada udara terjebak di selang rem (masuk angin)" },
+            { q: "Motor matic bergetar hebat saat akselerasi awal (putaran rendah). Komponen mana yang bermasalah?", opt: ["Kampas ganda kotor atau rumah kopling peyang", "V-belt sudah retak-retak"], ans: "Kampas ganda kotor atau rumah kopling peyang" },
+            { q: "Warna busi putih bersih (pucat). Hal ini mengindikasikan bahwa campuran bahan bakar...", opt: ["Terlalu Miskin (Kebanyakan Udara)", "Terlalu Kaya (Kebanyakan Bensin)"], ans: "Terlalu Miskin (Kebanyakan Udara)" }
+            // Copy bagian ini dan masukkan ke dalam const bankSoal = [ ... ]
+{ q: "Motor Injeksi brebet saat akselerasi, tapi langsam normal. Hasil cek tekanan fuel pump 294 kPa (standar). Apa kemungkinan diagnosa lain?", opt: ["Saringan udara sangat kotor / buntu", "Rotak lemah"], ans: "Saringan udara sangat kotor / buntu" },
+{ q: "Muncul suara decit (squeaking) dari bagian belakang motor matic saat mulai jalan. Diagnosa bagian CVT adalah?", opt: ["Kampas ganda kotor atau slip pada mangkok", "V-belt terlalu longgar"], ans: "Kampas ganda kotor atau rumah mangkok slip" },
+{ q: "Busi berwarna hitam kering dan berjelaga tebal. Apa masalah pada sistem pembakarannya?", opt: ["Campuran bahan bakar terlalu kaya (boros bensin)", "Mesin kelebihan oli mesin (bocor seal klep)"], ans: "Campuran bahan bakar terlalu kaya (boros bensin)" },
+// =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Hasil kompresi manual menunjukkan angka rendah, namun saat dimasukkan sedikit oli ke lubang busi, angka kompresi naik. Kerusakan terjadi pada?", opt: ["Ring piston atau dinding silinder aus", "Klep (Valve) bocor atau tidak rapat"], ans: "Ring piston atau dinding silinder aus" },
+{ q: "Sistem rem ABS lampu indikatornya terus menyala saat motor berjalan. Tindakan awal troubleshooting adalah?", opt: ["Cek sensor kecepatan roda dari kotoran/besi magnet", "Ganti minyak rem DOT 4 baru"], ans: "Cek sensor kecepatan roda dari kotoran/besi magnet" },
+{ q: "Motor bergetar (vibrasi) hebat di area setang saat kecepatan tinggi, padahal ban tidak benjol. Apa penyebab sasisnya?", opt: ["Velg mengalami oleng (Run-out) berlebih", "Komstir terlalu kencang"], ans: "Velg mengalami oleng (Run-out) berlebih" },
+{ q: "Pada sistem Injeksi (PGM-FI), MIL berkedip 7 kali. Sensor mana yang perlu diperiksa?", opt: ["EOT / ECT (Engine Oil/Coolant Temperature)", "TP (Throttle Position) Sensor"], ans: "EOT / ECT (Engine Oil/Coolant Temperature)" },
+{ q: "Celah (Gap) busi terlalu lebar melebihi spesifikasi (misal 1.5mm). Apa dampak yang paling terasa?", opt: ["Mesin sulit hidup dan api sering hilang (misfire)", "Bensin menjadi lebih irit"], ans: "Mesin sulit hidup dan api sering hilang (misfire)" },
+{ q: "V-belt pada motor matic pecah-pecah di bagian dalamnya. Apa resiko jika tidak segera diganti?", opt: ["V-belt putus tiba-tiba dan motor hilang tenaga", "Roller akan menjadi peyang (tidak rata)"], ans: "V-belt putus tiba-tiba dan motor hilang tenaga" },
+{ q: "Oli mesin berwarna putih seperti susu saat dikuras. Masalah terjadi pada?", opt: ["Air radiator masuk ke ruang mesin (bocor seal/packing)", "Oli mesin terbakar di ruang bakar"], ans: "Air radiator masuk ke ruang mesin (bocor seal/packing)" },
+{ q: "Saat mesin hidup, terdengar suara 'tek-tek' halus yang hilang saat gas ditarik. Diagnosa awal adalah?", opt: ["Celah klep terlalu renggang", "Rantai keteng (timing chain) kendor"], ans: "Celah klep terlalu renggang" },
+{ q: "Siswa menemukan ban belakang sering 'sliding' saat pengereman meski jalan kering. Tekanan ban normal. Cek bagian?", opt: ["Kedalaman alur ban (TWI) sudah gundul", "Shockbreaker bocor oli"], ans: "Kedalaman alur ban (TWI) sudah gundul" },
+
+        // =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Aki sering drop padahal aki baru 1 bulan. Tegangan pengisian saat mesin hidup hanya 12V. Kerusakan pada?", opt: ["Kiprok (Regulator/Rectifier) atau Spul", "Kabel bodi konslet ke massa"], ans: "Kiprok (Regulator/Rectifier) atau Spul" },
+{ q: "Gas motor matic tidak mau kembali (nyangkut) saat dilepas. Bahaya utama adalah?", opt: ["Motor terus melaju (uncontrolled acceleration)", "V-belt akan cepat aus"], ans: "Motor terus melaju (uncontrolled acceleration)" },
+{ q: "Kenapa celah klep buang (Ex) biasanya diatur lebih renggang dibanding klep masuk (In)?", opt: ["Klep buang menerima panas lebih tinggi (pemuaian lebih besar)", "Agar suara mesin lebih halus"], ans: "Klep buang menerima panas lebih tinggi (pemuaian lebih besar)" }
+{ q: "Lampu depan sering putus saat mesin digas tinggi, padahal bohlam sudah standar. Komponen apa yang gagal membatasi tegangan?", opt: ["Kiprok / Regulator", "Spul Penerangan"], ans: "Kiprok / Regulator" },
+{ q: "Air radiator di tangki cadangan (reservoir) selalu meluap saat mesin panas. Setelah dicek, tidak ada kebocoran selang. Apa penyebabnya?", opt: ["Klep pada tutup radiator (Radiator Cap) sudah lemah", "Water pump mati total"], ans: "Klep pada tutup radiator (Radiator Cap) sudah lemah" },
+{ q: "Motor Injeksi mati mendadak saat panas, dan tidak ada suara dengungan pump saat kunci kontak ON. Jika sudah dingin, motor hidup lagi. Diagnosa?", opt: ["Fuel Pump macet karena panas (Fuel Pump jamming)", "Busi minta ganti"], ans: "Fuel Pump macet karena panas (Fuel Pump jamming)" },
+{ q: "Siswa menemukan oli transmisi (gardan) pada motor matic berwarna coklat susu. Melalui mana air kemungkinan besar masuk?", opt: ["Selang pernapasan (breather hose) gardan lepas atau robek", "Bocor dari packing mesin tengah"], ans: "Selang pernapasan (breather hose) gardan lepas atau robek" },
+{ q: "Sekring (Fuse) selalu putus setiap kali rem ditekan. Di mana kemungkinan letak masalahnya?", opt: ["Kabel jalur lampu rem mengalami hubungan singkat (konslet) ke massa", "Bohlam lampu rem ukurannya terlalu besar"], ans: "Kabel jalur lampu rem mengalami hubungan singkat (konslet) ke massa" },
+{ q: "Kipas radiator (electric fan) tidak berputar padahal suhu mesin sudah sangat tinggi. Sensor apa yang memberi perintah kiprok/ECU untuk menyalakan kipas?", opt: ["ECT (Engine Coolant Temperature) Sensor", "IAT (Intake Air Temperature) Sensor"], ans: "ECT (Engine Coolant Temperature) Sensor" },
+{ q: "Motor matic terdengar suara kasar 'tek-tek-tek' di bagian depan blok CVT saat langsam, tapi hilang saat digas. Apa yang aus?", opt: ["Slide piece (tutup rumah roller) sudah longgar", "Roller sudah peyang"], ans: "Slide piece (tutup rumah roller) sudah longgar" },
+{ q: "Tegangan aki terbaca 12.4V saat mesin mati, tapi turun drastis ke 8V saat tombol starter ditekan. Apa kesimpulannya?", opt: ["Sel aki sudah rusak (Aki soak/tidak kuat beban)", "Dinamo starter konslet"], ans: "Sel aki sudah rusak (Aki soak/tidak kuat beban)" },
+// =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Pada sistem rem, jika pedal rem terasa sangat keras tapi motor tidak mau berhenti pakem, apa penyebabnya?", opt: ["Kampas rem mengeras (glazing) karena panas berlebih", "Ada udara di sistem hidrolik"], ans: "Kampas rem mengeras (glazing) karena panas berlebih" },
+{ q: "Motor berasap hitam pekat dari knalpot dan busi cepat hitam. Sensor mana yang mengirim data salah sehingga bensin terlalu boros?", opt: ["O2 Sensor atau MAP Sensor", "EOT Sensor"], ans: "O2 Sensor atau MAP Sensor" },
+{ q: "Apa resiko paling fatal jika air radiator dicampur dengan air keran biasa dalam jangka panjang?", opt: ["Terjadi korosi dan penyumbatan kerak pada kisi-kisi radiator", "Mesin menjadi lebih cepat dingin"], ans: "Terjadi korosi dan penyumbatan kerak pada kisi-kisi radiator" },
+{ q: "Suara mesin berisik (kasar) dan saat oli ditap volumenya berkurang drastis, tapi tidak ada kebocoran di luar mesin. Ke mana oli tersebut pergi?", opt: ["Terbakar di ruang bakar karena ring piston/seal klep aus", "Menguap karena filter udara kotor"], ans: "Terbakar di ruang bakar karena ring piston/seal klep aus" },
+{ q: "Lampu indikator MIL berkedip 12 kali pada motor Honda. Kabel atau komponen mana yang bermasalah?", opt: ["Injektor", "Sensor TP"], ans: "Injektor" },
+{ q: "Saat motor matic digas, mesin meraung tinggi tapi lari motor sangat lambat (slip). Bagian mana yang paling dicurigai?", opt: ["V-belt atau kampas ganda sudah tipis", "Gearbox belakang pecah"], ans: "V-belt atau kampas ganda sudah tipis" },
+{ q: "Kick starter (engkol) terasa sangat ringan saat ditekan, seolah tidak ada tahanan. Apa yang terjadi pada mesin?", opt: ["Terjadi loss kompresi (klep ganjal atau ring lemah)", "Kabel gas putus"], ans: "Terjadi loss kompresi (klep ganjal atau ring lemah)" },
+{ q: "Motor injeksi sulit stasioner (langsam tidak stabil). Komponen mana yang bertugas mengatur aliran udara saat langsam?", opt: ["IACV (Idle Air Control Valve) / FID", "Injektor"], ans: "IACV (Idle Air Control Valve) / FID" },
+{ q: "Ban belakang terasa goyang (geol) saat jalan rata, padahal tekanan ban cukup dan velg tidak oleng. Cek bagian sasis?", opt: ["Bushing engine mount atau shockbreaker sudah mati", "Lahar komstir"], ans: "Bushing engine mount atau shockbreaker sudah mati" },
+{ q: "Setelah mencuci motor, mesin sulit hidup dan terdengar suara 'cetek-cetek' di area busi. Apa yang harus dicek?", opt: ["Cek air yang masuk ke dalam tutup (cop) busi", "Ganti oli mesin baru"], ans: "Cek air yang masuk ke dalam tutup (cop) busi" },
+{ q: "Apa fungsi utama dari lubang kecil (bypass hole) pada thermostat radiator?", opt: ["Membuang gelembung udara dan sirkulasi kecil saat thermostat tutup", "Menambah tekanan air"], ans: "Membuang gelembung udara dan sirkulasi kecil saat thermostat tutup" },
+// =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Rantai motor mengeluarkan suara berisik meskipun sudah diberi pelumas. Jarak main bebas rantai terlihat sangat kencang. Apa bahayanya?", opt: ["Beban berlebih pada as gear depan dan rantai cepat putus", "Bensin jadi boros"], ans: "Beban berlebih pada as gear depan dan rantai cepat putus" }
+{ q: "Hasil pengukuran diameter silinder dengan Cylinder Bore Gauge menunjukkan angka yang berbeda antara bagian atas, tengah, dan bawah. Kondisi ini disebut?", opt: ["Keausan Ketirusan (Taper)", "Keausan Keovalan (Out of Round)"], ans: "Keausan Ketirusan (Taper)" },
+{ q: "Saat mengukur ketebalan piringan cakram dengan Mikrometer, terbaca angka 3,45 mm padahal batas servis 4,0 mm. Apa tindakan yang benar?", opt: ["Ganti piringan cakram dengan yang baru", "Cukup bersihkan dengan cairan rem"], ans: "Ganti piringan cakram dengan yang baru" },
+{ q: "Jarum Dial Gauge bergerak sangat jauh saat memeriksa keolengan (run-out) velg jari-jari. Apa langkah penyetelannya?", opt: ["Menyetel ulang kekencangan jari-jari (stel velg)", "Mengganti bearing roda"], ans: "Menyetel ulang kekencangan jari-jari (stel velg)" },
+{ q: "Mengapa pengukuran celah klep harus dilakukan saat mesin dalam kondisi dingin?", opt: ["Agar hasil presisi karena logam belum memuai", "Agar tangan mekanik tidak terbakar"], ans: "Agar hasil presisi karena logam belum memuai" },
+{ q: "Seorang siswa mengukur tegangan baterai. Hasil pada Multimeter menunjukkan 12,6V (Mesin Mati) dan 14,2V (Mesin Hidup 3000 RPM). Kesimpulannya?", opt: ["Sistem pengisian bekerja dengan normal", "Kiprok rusak/overcharge"], ans: "Sistem pengisian bekerja dengan normal" },
+{ q: "Filter udara tipe Viscous Element (kertas berlapis oli) sudah sangat kotor. Bolehkah dibersihkan dengan semprotan udara bertekanan?", opt: ["Tidak boleh, karena akan merusak lapisan oli dan pori-pori filter", "Boleh, asal dari arah yang berlawanan"], ans: "Tidak boleh, karena akan merusak lapisan oli dan pori-pori filter" },
+{ q: "Motor menggunakan radiator, tapi air pendingin cepat habis padahal tidak ada bocor luar. Asap knalpot terlihat putih kebiruan. Cek bagian?", opt: ["Gasket/packing kepala silinder bocor", "Radiator tersumbat kotoran"], ans: "Gasket/packing kepala silinder bocor" },
+{ q: "Apa fungsi utama dari penggunaan Feeler Gauge saat penyetelan celah klep?", opt: ["Memastikan jarak renggang klep sesuai spesifikasi pabrik", "Mengukur diameter batang klep"], ans: "Memastikan jarak renggang klep sesuai spesifikasi pabrik" },
+{ q: "Ban belakang motor matic goyang saat diputar tangan, setelah dicek ternyata baut as roda kencang. Apa kerusakan internalnya?", opt: ["Bearing (laher) gearbox atau as roda sudah aus", "V-belt sudah kendor"], ans: "Bearing (laher) gearbox atau as roda sudah aus" },
+{ q: "Tekanan ban yang terlalu rendah (kempes) pada roda depan akan mengakibatkan?", opt: ["Kemudi terasa berat saat belok", "Konsumsi bensin menjadi lebih irit"], ans: "Kemudi terasa berat saat belok" },
+{ q: "Pada sistem rem hidrolik, piston kaliper macet tidak mau kembali setelah rem dilepas. Apa penyebab paling sering?", opt: ["Debu dan karat pada seal piston kaliper", "Minyak rem terlalu penuh di master rem"], ans: "Debu dan karat pada seal piston kaliper" },
+{ q: "Warna oli mesin berubah menjadi hitam pekat dalam waktu yang sangat singkat (misal 100 km). Diagnosa?", opt: ["Ruang bakar kotor atau terjadi kebocoran kompresi", "Oli mesin yang digunakan terlalu berkualitas"], ans: "Ruang bakar kotor atau terjadi kebocoran kompresi" },
+{ q: "Apa dampak jika baut kepala silinder (baut blok) tidak dikencangkan dengan kunci Torsi (Moment)?", opt: ["Resiko kebocoran kompresi atau blok melengkung", "Suara mesin akan terdengar lebih empuk"], ans: "Resiko kebocoran kompresi atau blok melengkung" },
+
+        // =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Siswa mengukur berat jenis air aki dengan Hydrometer, pelampung menunjukkan area merah (1.100). Tindakannya?", opt: ["Lakukan pengisian ulang (charging) atau ganti air aki", "Aki masih dalam kondisi sangat bagus"], ans: "Lakukan pengisian ulang (charging) atau ganti air aki" },
+{ q: "Motor matic mengeluarkan bunyi 'cit-cit' di area CVT saat berakselerasi saja. Apa yang perlu dilumasi?", opt: ["Beri sedikit grease pada area sliding secondary sheave", "Beri oli pada permukaan V-belt"], ans: "Beri sedikit grease pada area sliding secondary sheave" },
+{ q: "Jika ujung busi tertutup kerak oli basah, diagnosa mesinnya adalah?", opt: ["Oli masuk ke ruang bakar (ring piston/seal klep bocor)", "Campuran bensin terlalu irit"], ans: "Oli masuk ke ruang bakar (ring piston/seal klep bocor)" },
+{ q: "Komstir (Steering Cone) motor terasa ada 'klik' atau hambatan di tengah saat setang dibelokkan. Diagnosa?", opt: ["Race ball (rumah peluru) sudah cacat/aus", "Ban depan kurang angin"], ans: "Race ball (rumah peluru) sudah cacat/aus" },
+{ q: "Pada scanner injeksi, parameter 'Altitude' menunjukkan angka yang tidak normal. Sensor apa yang terganggu?", opt: ["MAP (Manifold Absolute Pressure)", "TP (Throttle Position)"], ans: "MAP (Manifold Absolute Pressure)" },
+{ q: "Apa tanda paling jelas jika kopling pada motor bebek/sport mulai slip?", opt: ["Putaran mesin naik tinggi tapi kecepatan motor lambat", "Gigi transmisi tidak bisa dipindah"], ans: "Putaran mesin naik tinggi tapi kecepatan motor lambat" },
+{ q: "Saringan bensin (fuel filter) pada motor injeksi tersumbat total. Dampaknya?", opt: ["Motor akan mogok karena bensin tidak sampai ke injektor", "Tekanan bensin akan naik drastis"], ans: "Motor akan mogok karena bensin tidak sampai ke injektor" }
+{ q: "Saat mengukur keolengan poros engkol (kruk as) dengan Dial Gauge, jarum bergerak dari angka 0 ke kanan hingga 0.08 mm. Berapakah nilai keolengannya?", opt: ["0.08 mm", "0.04 mm"], ans: "0.08 mm" },
+{ q: "Seorang mekanik mengukur celah ring piston. Saat ring dimasukkan ke silinder, celah diukur dengan Feeler Gauge dan hasilnya 0.60 mm (Batas servis 0.45 mm). Diagnosa?", opt: ["Ring piston sudah aus dan harus diganti", "Silinder masih dalam kondisi baru"], ans: "Ring piston sudah aus dan harus diganti" },
+{ q: "Motor bebek sulit pindah gigi dan sering 'loncat' ke netral sendiri saat jalan. Bagian mana yang kemungkinan besar aus?", opt: ["Shift Drum atau Fork Pemindah", "Kampas kopling tipis"], ans: "Shift Drum atau Fork Pemindah" },
+{ q: "Mengapa pada saat mengukur tegangan aki, Multimeter harus disetel pada skala DC Volt, bukan AC Volt?", opt: ["Aki menghasilkan arus searah (Direct Current)", "Aki menghasilkan arus bolak-balik"], ans: "Aki menghasilkan arus searah (Direct Current)" },
+// =========================================================================================
+// >>>>>>>>>>>>>>>>>>>>>>>>> PEMBATAS BANK SOAL SESI BARU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// =========================================================================================
+        { q: "Lampu MIL berkedip 52 kali. Sensor apakah yang bermasalah pada sistem injeksi Honda?", opt: ["CKP (Crankshaft Position) Sensor", "Sensor Injektor"], ans: "CKP (Crankshaft Position) Sensor" },
+{ q: "Jika percikan api pada busi berwarna merah dan kecil, padahal koil baru. Apa yang harus diperiksa selanjutnya?", opt: ["Kabel massa body atau arus input CDI/ECM", "Tekanan ban belakang"], ans: "Kabel massa body atau arus input CDI/ECM" },
+{ q: "Pada sistem rem, apa yang terjadi jika terdapat endapan lumpur (sludge) pada lubang kompensasi master rem?", opt: ["Rem akan terkunci sendiri (macet) saat panas", "Rem akan terasa terlalu pakem"], ans: "Rem akan terkunci sendiri (macet) saat panas" },
+{ q: "Mengukur diameter luar piston menggunakan Mikrometer harus dilakukan pada bagian mana agar akurat?", opt: ["Sekitar 10-15mm dari bawah rok piston (tegak lurus pen)", "Tepat di bagian paling atas (crown) piston"], ans: "Sekitar 10-15mm dari bawah rok piston (tegak lurus pen)" },
+{ q: "Hasil pembacaan Mikrometer: Skala utama 5.5 mm, skala nonius di angka 12. Berapakah hasil totalnya?", opt: ["5.62 mm", "5.12 mm"], ans: "5.62 mm" },
+{ q: "Kenapa mesin motor 4 tak bisa mengeluarkan asap putih jika seal klep bocor?", opt: ["Oli dari kepala silinder terhisap masuk ke ruang bakar", "Bensin terlalu banyak masuk ke mesin"], ans: "Oli dari kepala silinder terhisap masuk ke ruang bakar" },
+{ q: "Pada motor matic, jika roller dipasang terbalik (sisi yang tidak tertutup menghadap arah putaran), apa dampaknya?", opt: ["Rumah roller (pulley) akan cepat aus/terkikis", "Motor jadi lebih kencang"], ans: "Rumah roller (pulley) akan cepat aus/terkikis" },
+{ q: "Setelan stasioner (langsam) terlalu tinggi pada motor matic dapat mengakibatkan?", opt: ["Roda belakang berputar sendiri saat berhenti", "V-belt cepat putus"], ans: "Roda belakang berputar sendiri saat berhenti" },
+{ q: "Apa kegunaan utama dari cairan 'Contact Cleaner' dalam troubleshooting kelistrikan?", opt: ["Membersihkan jamur/korosi pada soket tanpa konslet", "Melumasi rantai roda"], ans: "Membersihkan jamur/korosi pada soket tanpa konslet" },
+{ q: "Alat yang paling tepat untuk melepas magnet motor tanpa digetok adalah?", opt: ["Tracker Magnet (Flywheel Puller)", "Kunci Inggris"], ans: "Tracker Magnet (Flywheel Puller)" },
+{ q: "Saat mengencangkan baut kepala silinder, mengapa harus menggunakan Kunci Torsi?", opt: ["Agar kekencangan baut merata dan mencegah kebocoran/melengkung", "Agar baut tidak bisa dibuka lagi"], ans: "Agar kekencangan baut merata dan mencegah kebocoran/melengkung" },
+{ q: "Fungsi dari 'Feeler Gauge' pada penyetelan klep adalah?", opt: ["Mengukur celah renggang antara ujung batang klep dengan baut pelatuk", "Mengukur diameter batang klep"], ans: "Mengukur celah renggang antara ujung batang klep dengan baut pelatuk" },
+{ q: "Apa kegunaan 'Impact Driver' (Obeng Getok) di bengkel?", opt: ["Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan", "Mengukur tekanan kompresi"], ans: "Membuka baut yang sangat keras atau berkarat dengan bantuan pukulan" },
+{ q: "Alat ukur yang memiliki tingkat ketelitian 0,01 mm dan digunakan untuk diameter luar piston adalah?", opt: ["Mikrometer Luar", "Jangka Sorong"], ans: "Mikrometer Luar" },
+{ q: "Mengapa mekanik wajib menggunakan sepatu safety saat bekerja di bengkel?", opt: ["Melindungi kaki dari tumpahan oli dan jatuhnya benda berat", "Agar terlihat lebih rapi dan keren"], ans: "Melindungi kaki dari tumpahan oli dan jatuhnya benda berat" },
+{ q: "Apa fungsi dari 'Valve Spring Compressor'?", opt: ["Melepas dan memasang pengunci klep pada kepala silinder", "Mengukur kekuatan pegas klep"], ans: "Melepas dan memasang pengunci klep pada kepala silinder" },
+{ q: "Saat terjadi kebakaran akibat korsleting listrik di bengkel, jenis APAR apa yang paling tepat?", opt: ["APAR jenis CO2 atau Powder", "Air bertekanan tinggi"], ans: "APAR jenis CO2 atau Powder" },
+{ q: "Apa kegunaan dari 'Dial Gauge' saat memeriksa kruk as?", opt: ["Mengukur keolengan (run-out) poros kruk as", "Mengukur berat kruk as"], ans: "Mengukur keolengan (run-out) poros kruk as" },
+{ q: "Alat yang digunakan untuk membuang udara pada sistem rem hidrolik secara praktis adalah?", opt: ["Vacuum Brake Bleeder", "Obeng Min"], ans: "Vacuum Brake Bleeder" },
+{ q: "Mengapa kacamata pelindung (Goggles) wajib dipakai saat menggunakan mesin gerinda?", opt: ["Melindungi mata dari percikan api dan gram besi", "Agar pandangan lebih fokus"], ans: "Melindungi mata dari percikan api dan gram besi" },
+{ q: "Apa fungsi dari 'Vernier Caliper' (Jangka Sorong)?", opt: ["Mengukur diameter luar, dalam, dan kedalaman benda", "Mengukur tegangan aki"], ans: "Mengukur diameter luar, dalam, dan kedalaman benda" },
+{ q: "Jika ingin mengukur diameter dalam silinder yang sudah dilepas, alat yang digunakan setelah jangka sorong adalah?", opt: ["Cylinder Bore Gauge", "Mikrometer Luar"], ans: "Cylinder Bore Gauge" },
+{ q: "Alat SST yang berfungsi untuk menahan rumah kopling matic agar tidak berputar saat dibuka adalah?", opt: ["Universal Holder (Kunci Tracker)", "Tang Kombinasi"], ans: "Universal Holder (Kunci Tracker)" },
+{ q: "Apa fungsi 'Fender Cover' saat melakukan servis motor?", opt: ["Melindungi body motor agar tidak baret atau terkena oli", "Menyimpan alat-alat mekanik"], ans: "Melindungi body motor agar tidak baret atau terkena oli" },
+{ q: "Untuk mengukur tekanan bahan bakar pada motor injeksi, kita menggunakan?", opt: ["Fuel Pressure Gauge", "Compression Tester"], ans: "Fuel Pressure Gauge" },
+{ q: "Apa kegunaan dari 'Air Duster Gun'?", opt: ["Membersihkan debu atau sisa cairan dengan udara bertekanan", "Menyemprotkan bensin ke mesin"], ans: "Membersihkan debu atau sisa cairan dengan udara bertekanan" },
+{ q: "Bagaimana cara membaca hasil ukur jangka sorong jika garis nol nonius berada di antara 10 dan 11 mm?", opt: ["Nilai utamanya adalah 10 mm", "Nilai utamanya adalah 11 mm"], ans: "Nilai utamanya adalah 10 mm" },
+{ q: "Alat ukur kelistrikan yang dapat mengukur tegangan, arus, dan hambatan sekaligus adalah?", opt: ["Multimeter (Avometer)", "Tachometer"], ans: "Multimeter (Avometer)" },
+{ q: "Mengapa tangan tidak boleh berminyak/licin saat menggunakan kunci pas/ring?", opt: ["Mencegah kunci selip yang dapat menyebabkan cedera tangan", "Agar kunci tidak cepat berkarat"], ans: "Mencegah kunci selip yang dapat menyebabkan cedera tangan" }      
+        ];
+
+        let skorBenar = 0;
+        let skorSalah = 0;
+        let totalDikerjakan = 0;
+
+        function updateDisplay() {
+            document.getElementById('count-benar').innerText = skorBenar;
+            document.getElementById('count-salah').innerText = skorSalah;
+            document.getElementById('total-done').innerText = totalDikerjakan;
+            
+            // Hitung Nilai (0-100)
+            let nilai = totalDikerjakan === 0 ? 0 : Math.round((skorBenar / totalDikerjakan) * 100);
+            document.getElementById('final-grade').innerText = nilai;
+        }
+
+        // --- BAGIAN LOGIKA SISTEM 10 SOAL ---
+let soalTerpilih = []; // Tempat menyimpan 10 soal acak
+let indexSekarang = 0;
+let skor = 0;
+
+function mulaiKuis() {
+    // 1. Acak seluruh bank soal, lalu ambil 10 saja
+    soalTerpilih = [...bankSoal].sort(() => Math.random() - 0.5).slice(0, 10);
+    
+    skor = 0;
+    indexSekarang = 0;
+    tampilkanSoal();
+}
+
+function tampilkanSoal() {
+    if (indexSekarang < soalTerpilih.length) {
+        const data = soalTerpilih[indexSekarang];
+        document.getElementById("question").innerText = `Soal ${indexSekarang + 1}: ${data.q}`;
+        
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        
+        data.opt.forEach(pilihan => {
+            const btn = document.createElement("button");
+            btn.innerText = pilihan;
+            btn.onclick = () => cekJawaban(pilihan);
+            optionsDiv.appendChild(btn);
+        });
+    } else {
+        tampilkanHasil();
+    }
+}
+
+function cekJawaban(jawabanUser) {
+    if (jawabanUser === soalTerpilih[indexSekarang].ans) {
+        skor++;
+    }
+    indexSekarang++;
+    tampilkanSoal();
+}
+
+function tampilkanHasil() {
+    const totalPoint = (skor / soalTerpilih.length) * 100;
+    document.getElementById("quiz-container").innerHTML = `
+        <h2>Kuis Selesai!</h2>
+        <p>Jawaban Benar: ${skor} dari 10 soal</p>
+        <h1 style="font-size: 50px;">Point: ${totalPoint}</h1>
+        <button onclick="location.reload()">Ulangi Kuis (Soal Baru)</button>
+    `;
+}
+
+// Jalankan fungsi mulaiKuis saat halaman dibuka
+window.onload = mulaiKuis;
+    </script>
+</body>
+</html>
